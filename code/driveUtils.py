@@ -52,6 +52,10 @@ def computePatch(img,size=(16,16),channel=0):
 	
 	return imgPatch
 
+def flattenarray(arr):
+	farr = np.ndarray.flatten(arr)
+	return farr
 
-
-
+def flattenlist(li):
+	fli = [flattenarray(x) for x in li]
+	return fli
