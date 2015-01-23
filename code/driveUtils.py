@@ -53,9 +53,25 @@ def computePatch(img,size=(16,16),channel=0):
 	return imgPatch
 
 def flattenarray(arr):
+	'''
+	Flatten the array
+	'''
 	farr = np.ndarray.flatten(arr)
 	return farr
 
 def flattenlist(li):
+	'''
+	Flatten all arrays in the list
+	'''
+	
 	fli = [flattenarray(x) for x in li]
 	return fli
+
+def cluster(data):
+	return
+
+def whiten():
+	return
+
+def normalize():
+	return
