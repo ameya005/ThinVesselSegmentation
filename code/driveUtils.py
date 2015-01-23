@@ -63,7 +63,7 @@ def flattenlist(li):
 	'''
 	Flatten all arrays in the list
 	'''
-	
+
 	fli = [flattenarray(x) for x in li]
 	return fli
 
@@ -73,5 +73,34 @@ def cluster(data):
 def whiten():
 	return
 
-def normalize():
+def normalize(data):
+	ndata = [( (x-x.mean())/np.std(x) ) for x in data]
 	return
+
+def storePatch(imgPatch,dataset="training",normalize="no"):
+	'''
+	Stores the patch on the disk
+
+	Creates the directory based on the key. Stores the images
+	'''
+	dirStart = "../"+dataset+"/images/"
+
+	for key in imgPatch.keys():
+		if not os.path.exists(dirStart+key):
+			os.makedirs(dirStart+key)
+
+		for i,j in enumerate(imgPatch[key]):
+			plt.imsave(dirStart+key+'/'+str(i)+'.png',j,cmap=cm.gray)
+
+def readPatch(keydir,dataset="training"):
+	'''
+	Read the stored patches
+	'''
+	dirStart = "../"+dataset+"/images/"
+
+	keys = os.listdir(dirStart)
+
+	
+	for key in keys:
+		dirNew = dirStart+key
+			
