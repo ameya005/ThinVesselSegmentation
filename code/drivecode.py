@@ -29,30 +29,43 @@ for key in patchesRed.keys():
 
 	redPatch = driveUtils.flattenlist(redPatch)
 
-#Green Channel
-patchesGreen = driveUtils.computePatch(img,channel=1)
+km = KMeans(n_clusters=100,n_jobs=-1)
+km.fit(redPatch)
 
-greenPatch = []
-greenPatchGT=[]
+redIdx = km.predict(redPatch)
 
-for key in patchesGreen.keys():
-	rnumber = (np.random.sample(500)*250000).astype('int')
-	greenPatch.extend(patchesGreen[key][rnumber])
-	greenPatchGT.extend(patchesGT[key][rnumber])
+redCluster = {}
 
-	greenPatch = flattenlist(greenPatch)
+for i in range(100):
+	redCluster[i] =[]
 
-#Blue Channel
-patchesBlue = driveUtils.computePatch(img,channel=2)
+for i,j in enumerate(redIdx):
+	redCluster[j].append(redPatchGT[i])
 
-bluePatch = []
-bluePatchGT=[]
+# #Green Channel
+# patchesGreen = driveUtils.computePatch(img,channel=1)
 
-for key in patchesBlue.keys():
-	rnumber = (np.random.sample(500)*250000).astype('int')
-	bluePatch.extend(patchesBlue[key][rnumber])
-	bluePatchGT.extend(patchesGT[key][rnumber])
+# greenPatch = []
+# greenPatchGT=[]
 
-	bluePatch = flattenlist(bluePatch)
+# for key in patchesGreen.keys():
+# 	rnumber = (np.random.sample(500)*250000).astype('int')
+# 	greenPatch.extend(patchesGreen[key][rnumber])
+# 	greenPatchGT.extend(patchesGT[key][rnumber])
+
+# 	greenPatch = flattenlist(greenPatch)
+
+# #Blue Channel
+# patchesBlue = driveUtils.computePatch(img,channel=2)
+
+# bluePatch = []
+# bluePatchGT=[]
+
+# for key in patchesBlue.keys():
+# 	rnumber = (np.random.sample(500)*250000).astype('int')
+# 	bluePatch.extend(patchesBlue[key][rnumber])
+# 	bluePatchGT.extend(patchesGT[key][rnumber])
+
+# 	bluePatch = flattenlist(bluePatch)
 
 
