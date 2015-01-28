@@ -27,7 +27,7 @@ for key in patchesRed.keys():
 	redPatch.extend(patchesRed[key][rnumber])
 	redPatchGT.extend(patchesGT[key][rnumber])
 
-	redPatch = flattenlist(redPatch)
+	redPatch = driveUtils.flattenlist(redPatch)
 
 #Green Channel
 patchesGreen = driveUtils.computePatch(img,channel=1)
@@ -43,7 +43,7 @@ for key in patchesGreen.keys():
 	greenPatch = flattenlist(greenPatch)
 
 #Blue Channel
-patchesBlue = driveUtils.computePatch(img,channel=0)
+patchesBlue = driveUtils.computePatch(img,channel=2)
 
 bluePatch = []
 bluePatchGT=[]

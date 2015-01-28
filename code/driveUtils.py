@@ -6,6 +6,7 @@ import os
 import glob
 from matplotlib import pyplot as plt
 from patchify import patchify
+import numpy as np
 
 def readimage(dir):
 	'''	Read the image and decompose into different color channels
@@ -74,6 +75,9 @@ def whiten():
 	return
 
 def normalize(data):
+	mean = np.mean(data)
+	stdev = np.std(data)
+
 	ndata = [( (x-x.mean())/np.std(x) ) for x in data]
 	return
 
