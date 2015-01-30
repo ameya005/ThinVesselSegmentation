@@ -40,7 +40,25 @@ for i in range(100):
 	redCluster[i] =[]
 
 for i,j in enumerate(redIdx):
-	redCluster[j].append(redPatchGT[i])
+	redCluster[j].append(redPatchGT[i].astype('uint16'))
+
+clusterGt = {}
+
+for i in redCluster.keys():
+	clusterGt[i] = np.average(redCluster[i],axis=0)
+
+'''
+Test on an image
+'''
+
+testimgpatches = driveUtils.flattenlist(patches['25'])
+testimgpred = km.predict(testimgpatches)
+
+testimg_recreate = patchify.unpatchify(np.asarray([clusterGt[j] for i,j in enumerate(testimgpred)]),(584,565))
+
+
+
+
 
 # #Green Channel
 # patchesGreen = driveUtils.computePatch(img,channel=1)
