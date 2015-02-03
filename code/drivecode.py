@@ -4,7 +4,7 @@ Main file
 
 import driveUtils
 import patchify
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, MiniBatchKMeans
 
 # Training Patches
 img = driveUtils.readimage('../training/images/')
@@ -67,13 +67,13 @@ Clustering the patches
 '''
 
 
-kmR = KMeans(n_clusters=1000,n_jobs=-1)
+kmR = MiniBatchKMeans(n_clusters=1000)
 kmR.fit(redPatch)
 
-kmG = KMeans(n_clusters=1000,n_jobs=-1)
+kmG = MiniBatchKMeans(n_clusters=1000)
 kmG.fit(greenPatch)
 
-kmB = KMeans(n_clusters=1000,n_jobs=-1)
+kmB = MiniBatchKMeans(n_clusters=1000)
 kmB.fit(bluePatch)
 
 
@@ -83,9 +83,9 @@ Indexing the patches to cluster and predicting
 
 '''
 
-redIdx = km.predict(redPatch)
-greenIdx = km.predict(greenPatch)
-blueIdx = km.predict(bluePatch)
+redIdx = kmR.predict(redPatch)
+greenIdx = kmG.predict(greenPatch)
+blueIdx = kmB.predict(bluePatch)
 
 redCluster = {}
 greenCluster = {}
@@ -110,30 +110,37 @@ for i,j in enumerate(blueIdx):
 
 Groudn truth clustering
 '''
-clusterGt = {}
+clusterGtR = {}
+clusterGtG = {}
+clusterGtB = {}
 
 for i in redCluster.keys():
-	clusterGt[i] = np.average(redCluster[i],axis=0)
+	clusterGtR[i] = np.average(redCluster[i],axis=0)
 
+for i in greenCluster.keys():
+	clusterGtG[i] = np.average(greenCluster[i],axis=0)
+
+for i in blueCluster.keys():
+	clusterGtB[i] = np.average(blueCluster[i],axis=0)
 '''
 Test on an image
 '''
 
-t25red = redPatch['25']
-t25green = greenPatch['25']
-t25blue = bluePatch['25']
+t25red = driveUtils.flattenlist(patchesRed['25'])
+t25green = driveUtils.flattenlist(patchesGreen['25'])
+t25blue = driveUtils.flattenlist(patchesBlue['25'])
 
-t25redPred = km.predict(t25red)
-t25greenPred = km.predict(t25green)
-t25bluePred = km.predict(t25blue)
+t25redPred = kmR.predict(t25red)
+t25greenPred = kmG.predict(t25green)
+t25bluePred = kmB.predict(t25blue)
 
 #recreate images
 
 testimg = np.ndarray((584,565,3))
 
-testimg[:,:,0] = patchify.unpatchify(np.asarray([clusterGt[j] for i,j in enumerate(t25redPred)]),(584,565))
-testimg[:,:,1] = patchify.unpatchify(np.asarray([clusterGt[j] for i,j in enumerate(t25greenPred)]),(584,565))
-testimg[:,:,2] = patchify.unpatchify(np.asarray([clusterGt[j] for i,j in enumerate(t25bluePred)]),(584,565))
+testimg[:,:,0] = patchify.unpatchify(np.asarray([clusterGtR[j] for i,j in enumerate(t25redPred)]),(584,565))
+testimg[:,:,1] = patchify.unpatchify(np.asarray([clusterGtG[j] for i,j in enumerate(t25greenPred)]),(584,565))
+testimg[:,:,2] = patchify.unpatchify(np.asarray([clusterGtB[j] for i,j in enumerate(t25bluePred)]),(584,565))
 
 # Create segmentation image
 
