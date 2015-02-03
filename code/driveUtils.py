@@ -7,6 +7,8 @@ import glob
 from matplotlib import pyplot as plt
 from patchify import patchify
 import numpy as np
+from scipy.stats import zscore
+
 
 def readimage(dir):
 	'''	Read the image and decompose into different color channels
@@ -60,12 +62,21 @@ def flattenarray(arr):
 	farr = np.ndarray.flatten(arr)
 	return farr
 
+def normalize(data):
+	mean = np.mean(data)
+	stdev = np.std(data)
+
+	ndata = [( (x-x.mean())/np.std(x) ) for x in data]
+	return
+
+
 def flattenlist(li):
 	'''
 	Flatten all arrays in the list
 	'''
 
 	fli = [flattenarray(x) for x in li]
+
 	return fli
 
 def cluster(data):
@@ -74,12 +85,7 @@ def cluster(data):
 def whiten():
 	return
 
-def normalize(data):
-	mean = np.mean(data)
-	stdev = np.std(data)
 
-	ndata = [( (x-x.mean())/np.std(x) ) for x in data]
-	return
 
 def storePatch(imgPatch,dataset="training",normalize="no"):
 	'''
@@ -108,3 +114,11 @@ def readPatch(keydir,dataset="training"):
 	for key in keys:
 		dirNew = dirStart+key
 			
+
+def zscore_norm(data):
+	ndata = [np.asarray(zscore(x)) for x in data]
+	for x in ndata:
+		x[~np.isnan(x)]=1
+		x[np.isinf(x)]=0
+	#ndata = [x.tolist() for x in ndata]
+	return ndata

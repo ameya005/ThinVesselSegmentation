@@ -5,6 +5,8 @@ Main file
 import driveUtils
 import patchify
 from sklearn.cluster import KMeans, MiniBatchKMeans
+from skimage.filter import threshold_otsu as totsu
+import numpy as np
 
 # Training Patches
 img = driveUtils.readimage('../training/images/')
@@ -32,7 +34,7 @@ for key in patchesRed.keys():
 	redPatchGT.extend(patchesGT[key][rnumber])
 
 	redPatch = driveUtils.flattenlist(redPatch)
-
+	redPatch = driveUtils.zscore_norm(redPatch) #normalization
 
 #Green Channel
 patchesGreen = driveUtils.computePatch(img,channel=1)
@@ -46,6 +48,7 @@ for key in patchesGreen.keys():
 	greenPatchGT.extend(patchesGT[key][rnumber])
 
 	greenPatch = driveUtils.flattenlist(greenPatch)
+	greenPatch = driveUtils.zscore_norm(greenPatch) #normalization
 
 #Blue Channel
 patchesBlue = driveUtils.computePatch(img,channel=2)
@@ -59,6 +62,7 @@ for key in patchesBlue.keys():
 	bluePatchGT.extend(patchesGT[key][rnumber])
 
 	bluePatch = driveUtils.flattenlist(bluePatch)
+	bluePatch = driveUtils.zscore_norm(bluePatch) #normalization
 #----------------------------------------------------------------------------#
 
 '''
@@ -130,6 +134,10 @@ t25red = driveUtils.flattenlist(patchesRed['25'])
 t25green = driveUtils.flattenlist(patchesGreen['25'])
 t25blue = driveUtils.flattenlist(patchesBlue['25'])
 
+t25red = driveUtils.zscore_norm(t25red) #normalization
+t25green = driveUtils.zscore_norm(t25green) #normalization
+t25blue = driveUtils.zscore_norm(t25blue) #normalization
+
 t25redPred = kmR.predict(t25red)
 t25greenPred = kmG.predict(t25green)
 t25bluePred = kmB.predict(t25blue)
@@ -144,7 +152,14 @@ testimg[:,:,2] = patchify.unpatchify(np.asarray([clusterGtB[j] for i,j in enumer
 
 # Create segmentation image
 
+thres = totsu(testimg[:,:,0])
+imgR = testimg[:,:,0]>40
 
+thres = totsu(testimg[:,:,1])
+imgG = testimg[:,:,1]>40
+
+thres = totsu(testimg[:,:,2])
+imgB = testimg[:,:,2]>40
 
 # testimgpatches = driveUtils.flattenlist(patches['25'])
 # testimgpred = km.predict(testimgpatches)
