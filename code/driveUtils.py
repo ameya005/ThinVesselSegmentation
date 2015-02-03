@@ -118,7 +118,7 @@ def readPatch(keydir,dataset="training"):
 def zscore_norm(data):
 	ndata = [np.asarray(zscore(x)) for x in data]
 	for x in ndata:
-		x[~np.isnan(x)]=1
+		x[np.isnan(x)]=0
 		x[np.isinf(x)]=0
 	#ndata = [x.tolist() for x in ndata]
 	return ndata
