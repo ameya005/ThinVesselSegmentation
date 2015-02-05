@@ -57,3 +57,7 @@ km.fit(nPatch)
 indx = km.predict(nPatch)
 
 #For the groundtruth
+
+'''
+Working Model Gray Image 
+'''

@@ -7,7 +7,7 @@ import patchify
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from skimage.filter import threshold_otsu as totsu
 import numpy as np
-
+from skimage.color import rgb2hsv,rgb2lab,rgb2luv
 # Training Patches
 img = driveUtils.readimage('../training/images/')
 patches = driveUtils.computePatch(img)
@@ -33,8 +33,8 @@ for key in patchesRed.keys():
 	redPatch.extend(patchesRed[key][rnumber])
 	redPatchGT.extend(patchesGT[key][rnumber])
 
-	redPatch = driveUtils.flattenlist(redPatch)
-	redPatch = driveUtils.zscore_norm(redPatch) #normalization
+redPatch = driveUtils.flattenlist(redPatch)
+redPatch = driveUtils.zscore_norm(redPatch) #normalization
 
 #Green Channel
 patchesGreen = driveUtils.computePatch(img,channel=1)
@@ -167,7 +167,12 @@ imgB = testimg[:,:,2]>40
 # testimg_recreate = patchify.unpatchify(np.asarray([clusterGt[j] for i,j in enumerate(testimgpred)]),(584,565))
 
 
+'''
+Testing on HSV, LAB images
 
+'''
+
+#Convert image to CMYK
 
 
 
