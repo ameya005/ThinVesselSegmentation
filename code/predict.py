@@ -49,54 +49,90 @@ clusterGtG = {}
 clusterGtB = {}
 
 for i in range(1000):
-	clusterGtR[i] = [0]*256
-	clusterGtG[i] = [0]*256
-	clusterGtB[i] = [0]*256
+	clusterGtR[i] = []
+	clusterGtG[i] = []
+	clusterGtB[i] = []
+
+#Red Channel
 
 for key in patchesRed.keys():
+	print key
 	tPatchR = driveUtils.zscore_norm(driveUtils.flattenlist(patchesRed[key]))
 	redIdx = kmR.predict(tPatchR)
 
 	for i in range(1000):
 		redCluster[i] =[]
-		greenCluster[i] =[]
-		blueCluster[i] =[]
 
 	for i,j in enumerate(redIdx):
 		redCluster[j].append(patchesGT[key][i].astype('uint16'))
 		
 
 	for i in redCluster.keys():
-		clusterGtR[i].extend(redCluster[i])
-		clusterGtR[i] = np.average(np.asarray(clusterGtR[i]),axis=0)
+		if len(redCluster[i]) == 0:
+			continue
 
-greenIdx = kmG.predict(greenPatch)
-blueIdx = kmB.predict(bluePatch)
+		clu_list=[]
+		if len(clusterGtR[i]):
+			clu_list.append(clusterGtR[i])
+		if len(redCluster[i]):
+			clu_list.extend(redCluster[i])
+		#clusterGtR[i].extend(redCluster[i])
+		if len(clu_list):
+			clusterGtR[i] = np.average(np.asarray(clu_list),axis=0)
+
+#Green Channel#
+for key in patchesGreen.keys():
+	print key
+	tPatchG = driveUtils.zscore_norm(driveUtils.flattenlist(patchesGreen[key]))
+	greenIdx = kmR.predict(tPatchG)
+
+	for i in range(1000):
+		greenCluster[i] =[]
+
+	for i,j in enumerate(greenIdx):
+		greenCluster[j].append(patchesGT[key][i].astype('uint16'))
+		
+
+	for i in greenCluster.keys():
+		if len(greenCluster[i]) == 0:
+			continue
+
+		clu_list=[]
+		if len(clusterGtG[i]):
+			clu_list.append(clusterGtG[i])
+		if len(greenCluster[i]):
+			clu_list.extend(greenCluster[i])
+		#clusterGtG[i].extend(greenCluster[i])
+		if len(clu_list):
+			clusterGtG[i] = np.average(np.asarray(clu_list),axis=0)
+
+#Blue Channel#
+for key in patchesBlue.keys():
+	print key
+	tPatchB = driveUtils.zscore_norm(driveUtils.flattenlist(patchesBlue[key]))
+	blueIdx = kmR.predict(tPatchB)
+
+	for i in range(1000):
+		blueCluster[i] =[]
+
+	for i,j in enumerate(blueIdx):
+		blueCluster[j].append(patchesGT[key][i].astype('uint16'))
+		
+
+	for i in blueCluster.keys():
+		if len(blueCluster[i]) == 0:
+			continue
+
+		clu_list=[]
+		if len(clusterGtB[i]):
+			clu_list.append(clusterGtB[i])
+		if len(blueCluster[i]):
+			clu_list.extend(blueCluster[i])
+		#clusterGtB[i].extend(blueCluster[i])
+		if len(clu_list):
+			clusterGtB[i] = np.average(np.asarray(clu_list),axis=0)
 
 
-
-
-
-for i,j in enumerate(greenIdx):
-	greenCluster[j].append(greenPatchGT[i].astype('uint16'))
-
-for i,j in enumerate(blueIdx):
-	blueCluster[j].append(bluePatchGT[i].astype('uint16'))
-
-
-'''
-
-Groudn truth clustering
-'''
-
-
-
-
-for i in greenCluster.keys():
-	clusterGtG[i] = np.average(greenCluster[i],axis=0)
-
-for i in blueCluster.keys():
-	clusterGtB[i] = np.average(blueCluster[i],axis=0)
 
 ##########################
 #dirStart = "../"+dataset+"/images/"
