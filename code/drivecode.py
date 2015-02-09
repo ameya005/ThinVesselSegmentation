@@ -33,8 +33,8 @@ for key in patchesRed.keys():
 	redPatch.extend(patchesRed[key][rnumber])
 	redPatchGT.extend(patchesGT[key][rnumber])
 
-redPatch = driveUtils.flattenlist(redPatch)
-redPatch = driveUtils.zscore_norm(redPatch) #normalization
+	redPatch = driveUtils.flattenlist(redPatch)
+	redPatch = driveUtils.zscore_norm(redPatch) #normalization
 
 #Green Channel
 patchesGreen = driveUtils.computePatch(img,channel=1)
