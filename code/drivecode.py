@@ -33,8 +33,8 @@ for key in patchesRed.keys():
 	redPatch.extend(patchesRed[key][rnumber])
 	redPatchGT.extend(patchesGT[key][rnumber])
 
-	redPatch = driveUtils.flattenlist(redPatch)
-	redPatch = driveUtils.zscore_norm(redPatch) #normalization
+redPatch = driveUtils.flattenlist(redPatch)
+redPatch = driveUtils.zscore_norm(redPatch) #normalization
 
 #Green Channel
 patchesGreen = driveUtils.computePatch(img,channel=1)
@@ -47,8 +47,8 @@ for key in patchesGreen.keys():
 	greenPatch.extend(patchesGreen[key][rnumber])
 	greenPatchGT.extend(patchesGT[key][rnumber])
 
-	greenPatch = driveUtils.flattenlist(greenPatch)
-	greenPatch = driveUtils.zscore_norm(greenPatch) #normalization
+greenPatch = driveUtils.flattenlist(greenPatch)
+greenPatch = driveUtils.zscore_norm(greenPatch) #normalization
 
 #Blue Channel
 patchesBlue = driveUtils.computePatch(img,channel=2)
@@ -61,8 +61,8 @@ for key in patchesBlue.keys():
 	bluePatch.extend(patchesBlue[key][rnumber])
 	bluePatchGT.extend(patchesGT[key][rnumber])
 
-	bluePatch = driveUtils.flattenlist(bluePatch)
-	bluePatch = driveUtils.zscore_norm(bluePatch) #normalization
+bluePatch = driveUtils.flattenlist(bluePatch)
+bluePatch = driveUtils.zscore_norm(bluePatch) #normalization
 #----------------------------------------------------------------------------#
 
 '''
@@ -71,13 +71,13 @@ Clustering the patches
 '''
 
 
-kmR = MiniBatchKMeans(n_clusters=1000)
+kmR = MiniBatchKMeans(n_clusters=100)
 kmR.fit(redPatch)
 
-kmG = MiniBatchKMeans(n_clusters=1000)
+kmG = MiniBatchKMeans(n_clusters=100)
 kmG.fit(greenPatch)
 
-kmB = MiniBatchKMeans(n_clusters=1000)
+kmB = MiniBatchKMeans(n_clusters=100)
 kmB.fit(bluePatch)
 
 

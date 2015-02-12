@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 from patchify import patchify
 import numpy as np
 from scipy.stats import zscore
+from sklearn.metrics import roc_curve,auc
 
 
 def readimage(dir):
@@ -122,3 +123,41 @@ def zscore_norm(data):
 		x[np.isinf(x)]=0
 	#ndata = [x.tolist() for x in ndata]
 	return ndata
+
+def apply_mask(img,mask):
+	'''
+	Apply mask to the image and return masked image
+
+	'''
+
+	mask = mask/255.
+	new_img = img*mask
+
+	return new_img
+
+def seg_eval2(img,gt,thres=0.1):
+	img = (img>thres).astype('int')
+	res = (img == gt).astype('int')
+	gt = gt/255
+
+def seg_eval_roc(img,gt):
+	img = img.ravel()
+	gt = gt.ravel() / 255
+
+	fpr,tpr,_ =roc_curve(gt, img)
+	roc_auc = auc(fpr, tpr)
+
+	return fpr,tpr,roc_auc
+
+def plot_roc(fpr,tpr,roc_auc):
+	
+	plt.figure()
+	plt.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % roc_auc)
+	plt.plot([0, 1], [0, 1], 'k--')
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('Receiver operating characteristic example')
+	plt.legend(loc="lower right")
+	plt.show()
