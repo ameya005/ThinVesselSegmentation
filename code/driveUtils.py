@@ -135,10 +135,16 @@ def apply_mask(img,mask):
 
 	return new_img
 
-def seg_eval2(img,gt,thres=0.1):
-	img = (img>thres).astype('int')
-	res = (img == gt).astype('int')
-	gt = gt/255
+def seg_eval2(im_pred,im_gt,thres=0.1):
+	im_pred = (im_pred>thres).astype('int')
+	im_gt = im_gt/255
+
+	acc = accuracy_score(im_gt, im_pred)
+	prec = precision_score(im_gt,im_pred)
+	reca = recall_score(im_gt,im_pred)
+	f1 = f1_score(im_gt,im_pred)
+
+	return acc,prec,reca,f1
 
 def seg_eval_roc(img,gt):
 	img = img.ravel()
