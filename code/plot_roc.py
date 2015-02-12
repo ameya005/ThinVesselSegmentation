@@ -3,6 +3,7 @@ import os
 import glob
 from skimage.color import rgb2gray
 import numpy as np
+from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score
 
 '''
 Read the files
@@ -25,12 +26,18 @@ for file in filenames:
 '''
 Calcualte statistics all images
 '''
-im_true = []
+im_pred = []
 im_gt   = []
 
 for key in img.keys():
-	im_true.extend((img[key].ravel()).tolist())
+	im_pred.extend((img[key].ravel()).tolist())
 	im_gt.extend((gt1_img[key].ravel()).tolist())
 
-im_true = np.asarray(im_true)
+im_pred = np.asarray(im_pred)
 im_gt = np.asarray(im_gt)
+
+fpr,tpr,roc_auc = driveUtils.seg_eval_roc(im_pred, im_gt)
+driveUtils.plot_roc(fpr, tpr, roc_auc)
+
+#Calculate TP,FP, F1-score, accuracy,precision
+
