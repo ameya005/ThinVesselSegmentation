@@ -26,7 +26,7 @@ for file in filenames:
 	img[key] = rgb2gray(plt.imread(file)) * mask_img[key]
 	img[key] = img[key]/np.max(img[key])
 
-plotroc(img,gt1_img,"All")
+plotroc(img,gt1_img,"Ours")
 
 for gfile in file_green:
 	key = os.path.splitext(gfile)[0][-4:-2]
@@ -62,6 +62,7 @@ file_DL =glob.glob("../Other_Expt/DL/*.png")
 file_SE =glob.glob("../Other_Expt/SE/*.png")
 file_RTF =glob.glob("../Other_Expt/RTF/*.png")
 file_MICCAI =glob.glob("../Other_Expt/MICCAI/*.png")
+file_N4 =glob.glob("../Other_Expt/N4/*.png")
 
 for gfile in file_CS:
 	key = os.path.splitext(gfile)[0][-2:]
@@ -97,6 +98,13 @@ for gfile in file_MICCAI:
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"MICCAI")
+
+for gfile in file_N4:
+	key = os.path.splitext(gfile)[0][-2:]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img[key]
+	img[key] = img[key]/np.max(img[key])
+
+plotroc(img,gt1_img,"N4")
 '''
 Calcualte statistics all images
 '''
@@ -113,8 +121,8 @@ def plotroc(img,gt1_img,tit):
 	im_gt = np.asarray(im_gt)
 
 	fpr,tpr,roc_auc = driveUtils.seg_eval_roc(im_pred, im_gt)
-	driveUtils.plot_roc(fpr, tpr, roc_auc)
-	plt.title("ROC_" + str(tit))
+	driveUtils.plot_roc(fpr, tpr, roc_auc,tit)
+	#plt.title("ROC_" + str(tit))
 
 #Calculate TP,FP, F1-score, accuracy,precision
 
