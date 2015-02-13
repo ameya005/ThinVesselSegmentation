@@ -10,6 +10,7 @@ import numpy as np
 from scipy.stats import zscore
 from sklearn.metrics import roc_curve,auc
 from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score
+from skimage.morphology import binary_erosion, disk
 
 def readimage(dir):
 	'''	Read the image and decompose into different color channels
@@ -168,3 +169,12 @@ def plot_roc(fpr,tpr,roc_auc,lkey="Ours"):
 	plt.legend(loc="lower right")
 	plt.grid()
 	plt.show()
+
+def erode_mask(masks,seradius=6):
+
+	se =disk(seradius)
+
+	for key in masks.keys():
+		masks[key] = binary_erosion(masks[key], se)
+
+	return masks

@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans, MiniBatchKMeans
 from skimage.filter import threshold_otsu as totsu
 import numpy as np
 from skimage.color import rgb2hsv, rgb2lab, rgb2luv
+
 # Training Patches
 img = driveUtils.readimage('../training/images/')
 patches = driveUtils.computePatch(img)
