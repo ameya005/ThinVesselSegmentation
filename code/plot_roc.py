@@ -112,13 +112,21 @@ def plotroc(img,gt1_img,tit):
 
 	im_pred = []
 	im_gt   = []
+	im_mask = []
 
 	for key in img.keys():
 		im_pred.extend((img[key].ravel()).tolist())
 		im_gt.extend((gt1_img[key].ravel()).tolist())
+		im_mask.extend((mask_img[key].ravel()).tolist())
 
 	im_pred = np.asarray(im_pred)
 	im_gt = np.asarray(im_gt)
+	im_mask = np.asarray(im_mask)
+
+	nonzero = np.nonzero(im_mask)[0]
+
+	im_pred= im_pred[nonzero]
+	im_gt = im_gt[nonzero]
 
 	fpr,tpr,roc_auc = driveUtils.seg_eval_roc(im_pred, im_gt)
 	driveUtils.plot_roc(fpr, tpr, roc_auc,tit)
