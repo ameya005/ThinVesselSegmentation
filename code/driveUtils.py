@@ -9,7 +9,7 @@ from patchify import patchify
 import numpy as np
 from scipy.stats import zscore
 from sklearn.metrics import roc_curve,auc
-
+from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score
 
 def readimage(dir):
 	'''	Read the image and decompose into different color channels
@@ -166,4 +166,5 @@ def plot_roc(fpr,tpr,roc_auc):
 	plt.ylabel('True Positive Rate')
 	plt.title('Receiver operating characteristic')
 	plt.legend(loc="lower right")
+	plt.grid()
 	plt.show()
