@@ -50,7 +50,8 @@ img = {}
 '''
 Erode the masks
 '''
-mask_img = driveUtils.erode_mask(mask_img,seradius=6)
+mask_img = driveUtils.readimage('../test/mask/')
+#mask_img = driveUtils.erode_mask(mask_img,seradius=2)
 
 for file in filenames:
 	key = os.path.splitext(file)[0][-2:]
@@ -84,7 +85,7 @@ plotroc(img,gt1_img,"Ours")
 ####################################################################
 ####                     PLOT OTHERS							####
 ####################################################################
-
+mask_img = driveUtils.readimage('../test/mask/')
 '''
 Read other files
 '''
@@ -139,6 +140,16 @@ plotroc(img,gt1_img,"N4")
 '''
 Calcualte statistics all images
 '''
+
+mask_img = driveUtils.readimage('../test/mask/')
+mask_img = driveUtils.erode_mask(mask_img,seradius=12)
+
+for file in filenames:
+	key = os.path.splitext(file)[0][-2:]
+	img[key] = rgb2gray(plt.imread(file)) * mask_img[key]
+	img[key] = img[key]/np.max(img[key])
+
+plotroc(img,gt1_img,"Ours")
 
 #Calculate TP,FP, F1-score, accuracy,precision
 
