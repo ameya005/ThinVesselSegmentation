@@ -155,10 +155,10 @@ def seg_eval_roc(img,gt):
 
 	return fpr,tpr,roc_auc
 
-def plot_roc(fpr,tpr,roc_auc):
+def plot_roc(fpr,tpr,roc_auc,lkey="Ours"):
 	
-	plt.figure()
-	plt.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % roc_auc)
+	#plt.figure()
+	plt.plot(fpr, tpr, label=str(lkey)+'ROC curve (area = %0.2f)' % roc_auc)
 	plt.plot([0, 1], [0, 1], 'k--')
 	plt.xlim([0.0, 1.0])
 	plt.ylim([0.0, 1.05])
