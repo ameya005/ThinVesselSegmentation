@@ -11,11 +11,11 @@ from skimage.color import rgb2hsv, rgb2lab, rgb2luv
 
 # Training Patches
 img = driveUtils.readimage('../training/images/')
-patches = driveUtils.computePatch(img)
+patches = driveUtils.computePatch(img,size=(9,9))
 
 # Segmentation Patches
 imgGT = driveUtils.readimage('../training/1st_manual/')
-patchesGT = driveUtils.computePatch(imgGT)
+patchesGT = driveUtils.computePatch(imgGT,size=(9,9))
 # Generate Random numbers
 
 
@@ -38,7 +38,7 @@ redPatch = driveUtils.flattenlist(redPatch)
 redPatch = driveUtils.zscore_norm(redPatch)  # normalization
 
 # Green Channel
-patchesGreen = driveUtils.computePatch(img, channel=1)
+patchesGreen = driveUtils.computePatch(img, channel=1,size=(9,9))
 
 greenPatch = []
 greenPatchGT = []
@@ -72,13 +72,13 @@ Clustering the patches
 '''
 
 
-kmR = MiniBatchKMeans(n_clusters=100)
+kmR = MiniBatchKMeans(n_clusters=1000)
 kmR.fit(redPatch)
 
-kmG = MiniBatchKMeans(n_clusters=100)
+kmG = MiniBatchKMeans(n_clusters=1000)
 kmG.fit(greenPatch)
 
-kmB = MiniBatchKMeans(n_clusters=100)
+kmB = MiniBatchKMeans(n_clusters=1000)
 kmB.fit(bluePatch)
 
 
@@ -123,7 +123,8 @@ for i in redCluster.keys():
     clusterGtR[i] = np.average(redCluster[i], axis=0)
 
 for i in greenCluster.keys():
-    clusterGtG[i] = np.average(greenCluster[i], axis=0)
+	if len(greenCluster[i]):
+		clusterGtG[i] = np.average(greenCluster[i], axis=0)
 
 for i in blueCluster.keys():
     clusterGtB[i] = np.average(blueCluster[i], axis=0)

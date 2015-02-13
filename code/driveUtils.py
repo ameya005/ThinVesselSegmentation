@@ -178,3 +178,22 @@ def erode_mask(masks,seradius=6):
 		masks[key] = binary_erosion(masks[key], se)
 
 	return masks
+
+def plot_figures(figures, nrows = 1, ncols=1):
+    """Plot a dictionary of figures.
+
+    Parameters
+    ----------
+    ncols : number of columns of subplots wanted in the display
+    nrows : number of rows of subplots wanted in the figure
+    """
+
+    fig, axs = plt.subplots(nrows,ncols, figsize=(15, 6), facecolor='w', edgecolor='k')
+    fig.subplots_adjust(hspace = .5, wspace=.001)
+
+    axs = axs.ravel()
+    ks = figures.keys()
+    for i,j in enumerate(ks):
+        axs[i].imshow(clusterGtG[j])
+        axs[i].set_xticks([])
+        axs[i].set_yticks([])
