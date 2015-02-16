@@ -76,5 +76,36 @@ def test_predict(kmG,clusterGtG,location,patchsize=(10,10)):
 ####################################
 
 # Model 1
-
+# Detals : Patch Size = 10 Cluster =100
 km,clusterModel = drive_model(patchsize=(10,10),clusters=100)
+test_predict(km,clusterModel,"Model1",patchsize=(10, 10))
+
+# Model 2
+# Detals : Patch Size = 10 Cluster =50
+km,clusterModel = drive_model(patchsize=(10,10),clusters=50)
+test_predict(km,clusterModel,"Model2",patchsize=(10, 10))
+
+# Model 3
+# Detals : Patch Size = 10 Cluster =250
+km,clusterModel = drive_model(patchsize=(10,10),clusters=250)
+test_predict(km,clusterModel,"Model3",patchsize=(10, 10))
+
+# Model 4
+# Detals : Patch Size = 21 Cluster =50
+km,clusterModel = drive_model(patchsize=(21,21),clusters=50)
+test_predict(km,clusterModel,"Model4",patchsize=(21,21))
+
+# Model 5
+# Detals : Patch Size = 21 Cluster =100
+km,clusterModel = drive_model(patchsize=(21,21),clusters=100)
+test_predict(km,clusterModel,"Model5",patchsize=(21,21))
+
+# Model 6
+# Detals : Patch Size = 21 Cluster =250
+km,clusterModel = drive_model(patchsize=(21,21),clusters=250)
+test_predict(km,clusterModel,"Model6",patchsize=(21,21))
+
+# Model 7
+# Detals : Patch Size = 21 Cluster =500
+km,clusterModel = drive_model(patchsize=(21,21),clusters=500)
+test_predict(km,clusterModel,"Model7",patchsize=(21,21))
