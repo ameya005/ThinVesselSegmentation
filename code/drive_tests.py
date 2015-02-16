@@ -109,3 +109,23 @@ test_predict(km,clusterModel,"Model6",patchsize=(21,21))
 # Detals : Patch Size = 21 Cluster =500
 km,clusterModel = drive_model(patchsize=(21,21),clusters=500)
 test_predict(km,clusterModel,"Model7",patchsize=(21,21))
+
+# Model8
+# Detals : Patch Size = 16 Cluster =50
+km,clusterModel = drive_model(patchsize=(16,16),clusters=50)
+test_predict(km,clusterModel,"Model8",patchsize=(16,16))
+
+# Model9
+# Detals : Patch Size = 16 Cluster =100
+km,clusterModel = drive_model(patchsize=(16,16),clusters=100)
+test_predict(km,clusterModel,"Model9",patchsize=(16,16))
+
+# Model10
+# Detals : Patch Size = 16 Cluster =250
+km,clusterModel = drive_model(patchsize=(16,16),clusters=250)
+test_predict(km,clusterModel,"Model10",patchsize=(16,16))
+
+# Model11
+# Detals : Patch Size = 16 Cluster =500
+km,clusterModel = drive_model(patchsize=(16,16),clusters=500)
+test_predict(km,clusterModel,"Model11",patchsize=(16,16))
