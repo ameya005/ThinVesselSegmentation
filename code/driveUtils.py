@@ -197,3 +197,19 @@ def plot_figures(figures, nrows = 1, ncols=1):
         axs[i].imshow(clusterGtG[j])
         axs[i].set_xticks([])
         axs[i].set_yticks([])
+
+def plot_compare(modelname):
+	mask_img = driveUtils.readimage('../test/mask/')
+	gt1_img = driveUtils.readimage('../test/1st_manual/')
+	gt2_img = driveUtils.readimage('../test/2nd_manual/')
+
+	img = {}
+
+	file_green =glob.glob("../Results/" +str(modelname) +"/??_G.png")
+
+	for gfile in file_green:
+		key = os.path.splitext(gfile)[0][-4:-2]
+		img[key] = rgb2gray(plt.imread(gfile)) * mask_img[key]
+		img[key] = img[key]/np.max(img[key])
+
+	plotroc(img,gt1_img,modelname)

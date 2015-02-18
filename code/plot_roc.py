@@ -60,13 +60,13 @@ for file in filenames:
 
 plotroc(img,gt1_img,"Ours")
 
-# for gfile in file_green:
-# 	key = os.path.splitext(gfile)[0][-4:-2]
-# 	img[key] = rgb2gray(plt.imread(gfile)) * mask_img[key]
-# 	img[key] = img[key]/np.max(img[key])
+for gfile in file_green:
+	key = os.path.splitext(gfile)[0][-4:-2]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img[key]
+	img[key] = img[key]/np.max(img[key])
 
 
-# plotroc(img,gt1_img,"Green")
+plotroc(img,gt1_img,"Green")
 
 # for rfile in file_red:
 # 	key = os.path.splitext(rfile)[0][-4:-2]
