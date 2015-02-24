@@ -27,7 +27,7 @@ def drive_model(patchsize=(10,10),clusters=100):
 
     for key in patchesGreen.keys():
         # rnumber = (np.random.sample(15000) * 250000).astype('int')
-        rnumber = rand.sample(xrange(len(patchesGreen[key])), 15000)
+        rnumber = rand.sample(xrange(len(patchesGreen[key])), 30000)
         rnumber.extend(arange(100))
         greenPatch.extend(patchesGreen[key][rnumber])
         greenPatchGT.extend(patchesGT[key][rnumber])
@@ -35,7 +35,7 @@ def drive_model(patchsize=(10,10),clusters=100):
     greenPatch = driveUtils.flattenlist(greenPatch)
     greenPatch = driveUtils.zscore_norm(greenPatch)
 
-    kmG = MiniBatchKMeans(n_clusters=clusters, batch_size=10000,verbose=2)
+    kmG = MiniBatchKMeans(n_clusters=clusters, batch_size=10000,verbose=2,reassignment_ratio=0.0001)
     kmG.fit(greenPatch)
 
     greenIdx = kmG.predict(greenPatch)
@@ -67,6 +67,7 @@ def test_predict(kmG,clusterGtG,location,patchsize=(10,10)):
 
     for key in test_img.keys():     
         tPatchG = driveUtils.zscore_norm(driveUtils.flattenlist(testPatchG[key]))
+        # tPatchG = driveUtils.flattenlist(testPatchG[key])
         # print "Debug Level 1.2"
         patchGidx = kmG.predict(tPatchG)
         # print "Debug Level 3"
