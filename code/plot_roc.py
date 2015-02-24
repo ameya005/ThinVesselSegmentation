@@ -4,7 +4,7 @@ import glob
 from skimage.color import rgb2gray
 import numpy as np
 from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score
-from skimage.morphology import binary_erosion, disk
+from skimage.morphology import binary_erosion, disk, rectangle
 
 def plotroc(img,gt1_img,tit):
 
@@ -96,47 +96,56 @@ file_RTF =glob.glob("../Other_Expt/RTF/*.png")
 file_MICCAI =glob.glob("../Other_Expt/MICCAI/*.png")
 file_N4 =glob.glob("../Other_Expt/N4/*.png")
 
+img = {}
 for gfile in file_CS:
 	key = os.path.splitext(gfile)[0][-2:]
 	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"CS")
-
+img = {}
 for gfile in file_DL:
 	key = os.path.splitext(gfile)[0][-2:]
 	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"DL")
-
+img = {}
 for gfile in file_SE:
 	key = os.path.splitext(gfile)[0][-2:]
 	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"SE")
-
+img = {}
 for gfile in file_RTF:
 	key = os.path.splitext(gfile)[0][-2:]
 	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"RTF")
-
+img = {}
 for gfile in file_MICCAI:
 	key = os.path.splitext(gfile)[0][-2:]
 	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"MICCAI")
-
+img = {}
 for gfile in file_N4:
 	key = os.path.splitext(gfile)[0][-2:]
 	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"N4")
+img = {}
+files_avg = glob.glob("../Results/Model_10_1000/*.png")
+for gfile in files_avg:
+	key = os.path.splitext(gfile)[0][-4:-2]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img[key]
+	img[key] = img[key]/np.max(img[key])
+
+plotroc(img,gt1_img,"Model_Erosion_10_1000")
 '''
 Calcualte statistics all images
 '''
@@ -146,7 +155,7 @@ mask_img = driveUtils.erode_mask(mask_img,seradius=12)
 
 for file in filenames:
 	key = os.path.splitext(file)[0][-2:]
-	img[key] = rgb2gray(plt.imread(file)) * mask_img[key]
+	img[key] = rgb2gray(plt.imread(file))
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"Ours")
@@ -164,3 +173,31 @@ plotroc(img,gt1_img,"Ours")
 #     prec.append(b)
 #     reca.append(c)
 #     f1.append(d)
+
+## Computer Average of Model_10_1000
+models = ["Model_10_1000","Model_12_1000","Model_16_1000","Model_21_1000"]
+
+def average_patch(files =["Model_10_100","Model_10_500"]):
+	
+	pat = {}
+
+	fkeys =['11','03','13','12','06','07','04','16','19','18','08','09','15',
+			'02','01','17', '14', '20', '05', '10']
+
+	for key in fkeys:
+		pat[key]=[]
+
+	for key in files:
+		img = driveUtils.readimage('../Results/' +str(key)+'/')
+		for key in img.keys():
+			pat[key].append(img[key])
+
+	avg_pat ={}
+	for key in pat.keys():
+		avg_pat[key] = exposure.equalize_adapthist(rgb2gray(np.average(pat[key],axis=0)))
+
+	
+	return avg_pat
+
+for key in avg.keys():
+	plt.imsave('../Results/avg2/' + str(key) + '_G' +'.png', avg[key], cmap=cm.gray)

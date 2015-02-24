@@ -10,7 +10,7 @@ import numpy as np
 from scipy.stats import zscore
 from sklearn.metrics import roc_curve,auc
 from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score
-from skimage.morphology import binary_erosion, disk
+from skimage.morphology import binary_erosion, disk,rectangle
 
 def readimage(dir):
 	'''	Read the image and decompose into different color channels
@@ -213,3 +213,14 @@ def plot_compare(modelname):
 		img[key] = img[key]/np.max(img[key])
 
 	plotroc(img,gt1_img,modelname)
+
+
+
+def erode_mask_new(masks,seradius=6):
+
+	se =rectangle(seradius,seradius)
+
+	for key in masks.keys():
+		masks[key] = binary_erosion(masks[key], se)
+
+	return masks
