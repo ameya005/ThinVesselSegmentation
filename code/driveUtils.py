@@ -13,6 +13,8 @@ from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score
 from skimage.morphology import binary_erosion, disk,rectangle
 import cPickle as pickle
 from skimage import exposure
+import cv2
+import skimage.transform as skt
 
 def readimage(dir):
 	'''	Read the image and decompose into different color channels
@@ -242,3 +244,76 @@ def adapteq(img):
 	return img
 
 
+def eq_clahe(img,tilesize=(8,8),channel=1,clplmt=2.0):
+	'''
+	Contrast Limited Adaptive Histogram Equalization
+	Using cv2 CLAHE
+
+	
+	Input
+	-----
+
+	img : 		dict,	RGB images in form of dictionary
+	tilesize:	tuple,	tileGridSize value for CLAHE creation
+	clplmt:		float,	value for clipLimit in CLAHE
+
+	Return
+	------
+
+	img :		dict,	Equalized images
+
+	'''
+	#creating a clahe object 
+	clahe = cv2.createCLAHE(clipLimit=clplmt,tileGridSize=tilesize)
+	for key in img.keys():
+		img[key][:,:,0]=clahe.apply(img[key][:,:,0])
+		img[key][:,:,1]=clahe.apply(img[key][:,:,1])
+		img[key][:,:,2]=clahe.apply(img[key][:,:,2])
+
+	return img
+
+def scaleimg(img,scale=1):
+	'''
+	Scale the given image by the scaling fatctor
+
+	Input
+	-----
+	img:	ndarray,	image
+	scale:	float,		scaling value
+						defaults : 1 ( no scaling)
+
+	Return
+	------
+
+	Scaled image
+
+	'''
+
+	simg = skt.rescale(img, scale)
+	return simg
+
+def dictimgscale(imdict,scaling=1):
+	'''
+	Dict of images to scale
+
+	Input
+	-----
+
+	imdict:		dict, 	dictionary of image
+	scaling:	float,	scaling factor for the images
+
+	Return
+	------
+	dict, of scaled images
+	'''
+	for key in imdict.keys():
+		imdict[key] = scaleimg(imdict[key],scale=scaling)
+
+	return imdict
+
+
+def clusterimg(clustermodel):
+	return
+
+def patchGenerate():
+	return
