@@ -86,6 +86,8 @@ plotroc(img,gt1_img,"Green")
 ####                     PLOT OTHERS							####
 ####################################################################
 mask_img = driveUtils.readimage('../test/mask/')
+#mask_img1 = driveUtils.erode_mask_new(mask_img,seradius=21)
+mask_img1 = erode_mask_new(mask_img,seradius=21)
 '''
 Read other files
 '''
@@ -99,42 +101,42 @@ file_N4 =glob.glob("../Other_Expt/N4/*.png")
 img = {}
 for gfile in file_CS:
 	key = os.path.splitext(gfile)[0][-2:]
-	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"CS")
 img = {}
 for gfile in file_DL:
 	key = os.path.splitext(gfile)[0][-2:]
-	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"DL")
 img = {}
 for gfile in file_SE:
 	key = os.path.splitext(gfile)[0][-2:]
-	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"SE")
 img = {}
 for gfile in file_RTF:
 	key = os.path.splitext(gfile)[0][-2:]
-	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"RTF")
 img = {}
 for gfile in file_MICCAI:
 	key = os.path.splitext(gfile)[0][-2:]
-	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"MICCAI")
 img = {}
 for gfile in file_N4:
 	key = os.path.splitext(gfile)[0][-2:]
-	img[key] = rgb2gray(plt.imread(gfile)) #* mask_img[key]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"N4")
@@ -142,7 +144,7 @@ img = {}
 files_avg = glob.glob("../Results/Model_10_1000/*.png")
 for gfile in files_avg:
 	key = os.path.splitext(gfile)[0][-4:-2]
-	img[key] = rgb2gray(plt.imread(gfile)) * mask_img[key]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
 	img[key] = img[key]/np.max(img[key])
 
 plotroc(img,gt1_img,"Model_Erosion_10_1000")

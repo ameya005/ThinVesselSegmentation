@@ -11,6 +11,8 @@ from scipy.stats import zscore
 from sklearn.metrics import roc_curve,auc
 from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score
 from skimage.morphology import binary_erosion, disk,rectangle
+import cPickle as pickle
+from skimage import exposure
 
 def readimage(dir):
 	'''	Read the image and decompose into different color channels
@@ -224,3 +226,19 @@ def erode_mask_new(masks,seradius=6):
 		masks[key] = binary_erosion(masks[key], se)
 
 	return masks
+
+def save_model(filename,keymdl):
+	with open(filename,'wb') as fp:
+		pickle.dump(keymdl,fp)
+
+def adapteq(img):
+	'''
+	img : dict
+	'''
+
+	for key in img.keys():
+		img[key] = exposure.equalize_adapthist(img[key])
+
+	return img
+
+

@@ -13,8 +13,8 @@ def drive_model(patchsize=(10,10),clusters=100):
 
     # Training Patches
     img = driveUtils.readimage('../training/images/')
-    patches = driveUtils.computePatch(img,size=patchsize)
-
+    #patches = driveUtils.computePatch(img,size=patchsize)
+    img = driveUtils.adapteq(img)
     # Segmentation Patches
     imgGT = driveUtils.readimage('../training/1st_manual/')
     patchesGT = driveUtils.computePatch(imgGT,size=patchsize)
@@ -27,7 +27,7 @@ def drive_model(patchsize=(10,10),clusters=100):
 
     for key in patchesGreen.keys():
         # rnumber = (np.random.sample(15000) * 250000).astype('int')
-        rnumber = rand.sample(xrange(len(patchesGreen[key])), 30000)
+        rnumber = rand.sample(xrange(len(patchesGreen[key])), 10000)
         rnumber.extend(arange(100))
         greenPatch.extend(patchesGreen[key][rnumber])
         greenPatchGT.extend(patchesGT[key][rnumber])
@@ -193,3 +193,39 @@ test_predict(km,clusterModel,"Model_5_1000",patchsize=(5,5))
 
 km,clusterModel = drive_model(patchsize=(7,7),clusters=1000)
 test_predict(km,clusterModel,"Model_7_1000",patchsize=(7,7))
+
+
+# Cluster Model with patch size 15
+km,clusterModel = drive_model(patchsize=(15,15),clusters=1000)
+test_predict(km,clusterModel,"Model_15_1000",patchsize=(15,15))
+
+mdl = [km,clusterModel]
+save_model('../Results/Model_15_1000/model151000.data',mdl)
+
+# Cluster Model with patch size 15
+km,clusterModel = drive_model(patchsize=(25,25),clusters=1000)
+test_predict(km,clusterModel,"Model_25_1000",patchsize=(25,25))
+
+mdl = [km,clusterModel]
+save_model('../Results/Model_25_1000/model251000.data',mdl)
+
+# Cluster Model with patch size 35
+km,clusterModel = drive_model(patchsize=(35,35),clusters=1000)
+test_predict(km,clusterModel,"Model_35_1000",patchsize=(35,35))
+
+mdl = [km,clusterModel]
+save_model('../Results/Model_35_1000/model351000.data',mdl)
+
+# Cluster Model with patch size 50
+km,clusterModel = drive_model(patchsize=(50,50),clusters=1000)
+test_predict(km,clusterModel,"Model_50_1000",patchsize=(50,50))
+
+mdl = [km,clusterModel]
+save_model('../Results/Model_50_1000/model501000.data',mdl)
+
+# Cluster Model with patch size
+km,clusterModel = drive_model(patchsize=(100,100),clusters=1000)
+test_predict(km,clusterModel,"Model_100_1000",patchsize=(100,100))
+
+mdl = [km,clusterModel]
+save_model('../Results/Model_100_1000/model1001000.data',mdl)
