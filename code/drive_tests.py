@@ -13,8 +13,9 @@ def drive_model(patchsize=(10,10),clusters=100):
 
     # Training Patches
     img = driveUtils.readimage('../training/images/')
+    img = driveUtils.eq_clahe(img,tilesize=(24,24))
     #patches = driveUtils.computePatch(img,size=patchsize)
-    img = driveUtils.adapteq(img)
+    #img = driveUtils.adapteq(img)
     # Segmentation Patches
     imgGT = driveUtils.readimage('../training/1st_manual/')
     patchesGT = driveUtils.computePatch(imgGT,size=patchsize)
@@ -60,6 +61,7 @@ def drive_model(patchsize=(10,10),clusters=100):
 def test_predict(kmG,clusterGtG,location,patchsize=(10,10)):
 
     test_img = driveUtils.readimage('../test/images/')
+    test_img = driveUtils.eq_clahe(test_img,tilesize=(24,24))
     testPatchG = driveUtils.computePatch(test_img, channel=1,size=patchsize)
 
     if not os.path.exists('../Results/'+str(location)):
@@ -225,7 +227,19 @@ save_model('../Results/Model_50_1000/model501000.data',mdl)
 
 # Cluster Model with patch size
 km,clusterModel = drive_model(patchsize=(100,100),clusters=1000)
-test_predict(km,clusterModel,"Model_100_1000",patchsize=(100,100))
+km,clusterModel = drive_model(patchsize=(100,100),clusters=1000)
 
 mdl = [km,clusterModel]
 save_model('../Results/Model_100_1000/model1001000.data',mdl)
+
+
+####
+#Clahe test_predict
+km,clusterModel = drive_model(patchsize=(10,10),clusters=1000)
+test_predict(km,clusterModel,"clahe8_10_1000",patchsize=(10,10))
+
+km,clusterModel = drive_model(patchsize=(10,10),clusters=1000)
+test_predict(km,clusterModel,"clahe16_10_1000",patchsize=(10,10))
+
+km,clusterModel = drive_model(patchsize=(10,10),clusters=1000)
+test_predict(km,clusterModel,"clahe24_10_1000",patchsize=(10,10))

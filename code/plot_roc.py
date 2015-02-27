@@ -86,8 +86,8 @@ plotroc(img,gt1_img,"Green")
 ####                     PLOT OTHERS							####
 ####################################################################
 mask_img = driveUtils.readimage('../test/mask/')
-#mask_img1 = driveUtils.erode_mask_new(mask_img,seradius=21)
-mask_img1 = erode_mask_new(mask_img,seradius=21)
+mask_img1 = driveUtils.erode_mask_new(mask_img,seradius=21)
+#mask_img1 = erode_mask_new(mask_img,seradius=21)
 '''
 Read other files
 '''
@@ -141,13 +141,13 @@ for gfile in file_N4:
 
 plotroc(img,gt1_img,"N4")
 img = {}
-files_avg = glob.glob("../Results/Model_10_1000/*.png")
+files_avg = glob.glob("../Results/Model_10_1000_eq/*.png")
 for gfile in files_avg:
 	key = os.path.splitext(gfile)[0][-4:-2]
 	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
 	img[key] = img[key]/np.max(img[key])
 
-plotroc(img,gt1_img,"Model_Erosion_10_1000")
+plotroc(img,gt1_img,"Model_Erosion_10_1000_eq")
 '''
 Calcualte statistics all images
 '''
