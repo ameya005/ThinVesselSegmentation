@@ -308,9 +308,28 @@ def dictimgscale(imdict,scaling=1):
 	'''
 	for key in imdict.keys():
 		imdict[key] = scaleimg(imdict[key],scale=scaling)
+		#imdict[key] = imdict[key].astype('uint8')
 
 	return imdict
 
+def dictresizeimage(imgdict,shape=()):
+	'''
+	Dict of images to resize
+
+	Input
+	-----
+
+	imdict:		dict, 	dictionary of image
+	shape:		tuple,	size of image to resize to
+
+	Return
+	------
+	dict, of reszied images
+	'''
+	for key in imgdict.keys():
+		imgdict[key]  = skt.resize(imgdict[key], shape)
+
+	return imgdict
 
 def clusterimg(clustermodel):
 	return

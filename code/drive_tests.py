@@ -8,16 +8,24 @@ import random as rand
 import os
 from joblib import Parallel, delayed  
 import multiprocessing
+from skimage.transform import resize
 
 def drive_model(patchsize=(10,10),clusters=100):
 
     # Training Patches
     img = driveUtils.readimage('../training/images/')
-    img = driveUtils.eq_clahe(img,tilesize=(24,24))
+    img = driveUtils.dictimgscale(img,scaling=0.8)
+    #Scaling images
+
+
+    #img = driveUtils.eq_clahe(img,tilesize=(24,24))
     #patches = driveUtils.computePatch(img,size=patchsize)
     #img = driveUtils.adapteq(img)
+    
     # Segmentation Patches
     imgGT = driveUtils.readimage('../training/1st_manual/')
+    imgGT = driveUtils.dictimgscale(imgGT,scaling=0.8)
+
     patchesGT = driveUtils.computePatch(imgGT,size=patchsize)
     # Generate Random numbers
 
@@ -61,7 +69,10 @@ def drive_model(patchsize=(10,10),clusters=100):
 def test_predict(kmG,clusterGtG,location,patchsize=(10,10)):
 
     test_img = driveUtils.readimage('../test/images/')
-    test_img = driveUtils.eq_clahe(test_img,tilesize=(24,24))
+    #Scaling
+    test_img = driveUtils.dictimgscale(test_img,scaling=0.8)
+    a,b,c = test_img['11'].shape
+    #test_img = driveUtils.eq_clahe(test_img,tilesize=(24,24))
     testPatchG = driveUtils.computePatch(test_img, channel=1,size=patchsize)
 
     if not os.path.exists('../Results/'+str(location)):
@@ -74,9 +85,10 @@ def test_predict(kmG,clusterGtG,location,patchsize=(10,10)):
         patchGidx = kmG.predict(tPatchG)
         # print "Debug Level 3"
         testimg = patchify.unpatchify(
-            np.asarray([clusterGtG[j] for i, j in enumerate(patchGidx)]), (584, 565))
+            np.asarray([clusterGtG[j] for i, j in enumerate(patchGidx)]), (a,b))
 
-
+        testimg = resize(testimg, (584,565))
+        
         print "Saving_" + str(key)
 
         plt.imsave('../Results/'+str(location)+'/' + str(key) + '_G' +
@@ -243,3 +255,9 @@ test_predict(km,clusterModel,"clahe16_10_1000",patchsize=(10,10))
 
 km,clusterModel = drive_model(patchsize=(10,10),clusters=1000)
 test_predict(km,clusterModel,"clahe24_10_1000",patchsize=(10,10))
+
+
+##
+#resize image
+km,clusterModel = drive_model(patchsize=(10,10),clusters=1000)
+test_predict(km,clusterModel,"resize08_10_1000",patchsize=(10,10))

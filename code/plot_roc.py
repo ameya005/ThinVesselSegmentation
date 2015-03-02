@@ -141,6 +141,7 @@ for gfile in file_N4:
 
 plotroc(img,gt1_img,"N4")
 img = {}
+
 files_avg = glob.glob("../Results/Model_10_1000_eq/*.png")
 for gfile in files_avg:
 	key = os.path.splitext(gfile)[0][-4:-2]
@@ -203,3 +204,17 @@ def average_patch(files =["Model_10_100","Model_10_500"]):
 
 for key in avg.keys():
 	plt.imsave('../Results/avg2/' + str(key) + '_G' +'.png', avg[key], cmap=cm.gray)
+
+
+'''
+Plotting of scaled images
+'''
+
+files_avg = driveUtils.readimage("../Results/resize06_21_1000/")
+files_avg = dictresizeimage(files_avg,shape=(584,565))
+for gfile in files_avg:
+	key = os.path.splitext(gfile)[0][-4:-2]
+	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
+	img[key] = img[key]/np.max(img[key])
+
+plotroc(img,gt1_img,"Model_Resize06_21_1000_eq")
