@@ -210,11 +210,12 @@ for key in avg.keys():
 Plotting of scaled images
 '''
 
-files_avg = driveUtils.readimage("../Results/resize06_21_1000/")
+files_avg = driveUtils.readimage("../Results/resize06_10_1000/")
 files_avg = dictresizeimage(files_avg,shape=(584,565))
-for gfile in files_avg:
-	key = os.path.splitext(gfile)[0][-4:-2]
-	img[key] = rgb2gray(plt.imread(gfile)) * mask_img1[key]
-	img[key] = img[key]/np.max(img[key])
 
-plotroc(img,gt1_img,"Model_Resize06_21_1000_eq")
+for key in files_avg.keys():
+	
+	files_avg[key] = rgb2gray(files_avg[key]) * mask_img1[key]
+	files_avg[key] = files_avg[key]/np.max(files_avg[key])
+
+plotroc(files_avg,gt1_img,"Model_resize06_10_1000_eq")
