@@ -381,18 +381,18 @@ def cluster_to_list(clus):
 	'''
 	Provides a method to read cluster dictionary to a list
 	'''
-	return clus.viewvalues()
-	# img_list = []
+	#return clus.viewvalues()
+	img_list = []
 
-	# for key in clus.keys():
-	# 	img_list.append(clus[key])
+	for key in clus.keys():
+		img_list.append(clus[key])
 
-	# return img_list
+	return img_list
 
 def km_to_list(clus,shape=(21,21)):
 	'''
 	Reshape the learn cluster center to images
-	
+
 	'''
 	img_list =[]
 	clus_cen = clus.cluster_centers_
