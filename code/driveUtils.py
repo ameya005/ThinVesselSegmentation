@@ -336,3 +336,67 @@ def clusterimg(clustermodel):
 
 def patchGenerate():
 	return
+
+def displayPatch(images,M=1,N=1,patchSize=(3,3)):
+	'''
+	Input
+	-----
+	images :	list, list of ndarry images		
+	M :			int,Number of rows
+	N :			int,Number of columns
+	patchSize:	tuple, size of patches to be used for display
+
+	Return
+	------
+	patchImg:	ndarry, of all images
+
+	[TODO]
+	* Check for size
+	* Add option for resize
+	* Additonal checks
+	* Add borders
+	'''
+	totImages = len(images)
+	(patchL,patchH ) = patchSize
+	sizeImg = images[0].shape
+
+	if patchSize != sizeImg:
+		patchSize = sizeImg
+
+	sizeL = M * patchL
+	sizeH = N * patchH
+
+	patchImg = np.ones((sizeL,sizeH))
+	idx=0
+	for i in range(0,sizeL,patchL):
+		for j in range(0,sizeH,patchH):
+			if idx>=totImages:
+				break
+			patchImg[i:i+patchL,j:j+patchH] = images[idx]
+			idx += 1
+
+	return patchImg
+
+def cluster_to_list(clus):
+	'''
+	Provides a method to read cluster dictionary to a list
+	'''
+	return clus.viewvalues()
+	# img_list = []
+
+	# for key in clus.keys():
+	# 	img_list.append(clus[key])
+
+	# return img_list
+
+def km_to_list(clus,shape=(21,21)):
+	'''
+	Reshape the learn cluster center to images
+	
+	'''
+	img_list =[]
+	clus_cen = clus.cluster_centers_
+	for i in clus_cen:
+		img_list.append(i.reshape(shape))
+
+	return img_list
