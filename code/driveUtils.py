@@ -122,6 +122,10 @@ def readPatch(keydir,dataset="training"):
 			
 
 def zscore_norm(data):
+	'''
+	Normalizes a list of data
+
+	'''
 	ndata = [np.asarray(zscore(x)) for x in data]
 	for x in ndata:
 		x[np.isnan(x)]=0
@@ -140,7 +144,26 @@ def apply_mask(img,mask):
 
 	return new_img
 
-def seg_eval2(im_pred,im_gt,thres=0.1):
+def seg_eval2(im_pred,im_gt,thres=0.1,OTSU=False):
+	'''
+	Evaluation of segmentation ( acc, precision ,recall ,f1)
+	Inputs
+	------
+	im_prd:		ndarray, prediction image
+	im_gt:		ndarray, ground trut image
+	thres:		float, default = 0.1 , threshold of the segmentation
+	OTSU:		bol, if you want OTSU thresholding, overrides thres [TODO]
+
+	Returns
+	-------
+	Returns the evaluation metrics
+
+	acc:		accuracy score
+	prec:		precision score
+	reca:		recall score
+	f1:			f1 score
+	
+	'''
 	im_pred = (im_pred>thres).astype('int')
 	im_gt = im_gt/255
 
@@ -152,6 +175,19 @@ def seg_eval2(im_pred,im_gt,thres=0.1):
 	return acc,prec,reca,f1
 
 def seg_eval_roc(img,gt):
+	'''
+	Evaluation of segmentation ( FPR,TPR, ROC_AUC)
+
+	Inputs
+	------
+	img:	ndarray, Predicted Image
+	gt:		ndarray, Ground Truth image
+
+	Returns
+	-------
+	FPR, TPR , ROC
+
+	'''
 	img = img.ravel()
 	gt = gt.ravel() / 255
 
@@ -161,7 +197,16 @@ def seg_eval_roc(img,gt):
 	return fpr,tpr,roc_auc
 
 def plot_roc(fpr,tpr,roc_auc,lkey="Ours"):
-	
+	'''
+	Plot function for ROC curve.
+	See : seg_eval_roc() for calculating the given values
+
+	Inputs:
+	-------
+	FPR,TPR,ROC_AUC
+	lkey:	Plot legend value
+
+	'''
 	#plt.figure()
 	plt.plot(fpr, tpr, label=str(lkey)+'_ROC curve (area = %0.2f)' % roc_auc)
 	plt.plot([0, 1], [0, 1], 'k--')
@@ -175,7 +220,11 @@ def plot_roc(fpr,tpr,roc_auc,lkey="Ours"):
 	plt.show()
 
 def erode_mask(masks,seradius=6):
+	'''
+	Erode the mask by specified radius
+	SE Element disk
 
+	'''
 	se =disk(seradius)
 
 	for key in masks.keys():
@@ -203,6 +252,11 @@ def plot_figures(figures, nrows = 1, ncols=1):
         axs[i].set_yticks([])
 
 def plot_compare(modelname):
+	'''
+	Another plotting function 
+	See plotroc()
+
+	'''
 	mask_img = driveUtils.readimage('../test/mask/')
 	gt1_img = driveUtils.readimage('../test/1st_manual/')
 	gt2_img = driveUtils.readimage('../test/2nd_manual/')
@@ -221,7 +275,9 @@ def plot_compare(modelname):
 
 
 def erode_mask_new(masks,seradius=6):
-
+	'''
+	Mask erode
+	'''
 	se =rectangle(seradius,seradius)
 
 	for key in masks.keys():
@@ -230,11 +286,17 @@ def erode_mask_new(masks,seradius=6):
 	return masks
 
 def save_model(filename,keymdl):
+	'''
+	Function to save the model
+
+	'''
 	with open(filename,'wb') as fp:
 		pickle.dump(keymdl,fp)
 
 def adapteq(img):
 	'''
+	Adaptive Histogram Equalization
+	
 	img : dict
 	'''
 
@@ -400,3 +462,4 @@ def km_to_list(clus,shape=(21,21)):
 		img_list.append(i.reshape(shape))
 
 	return img_list
+

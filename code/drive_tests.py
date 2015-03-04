@@ -10,21 +10,18 @@ from joblib import Parallel, delayed
 import multiprocessing
 from skimage.transform import resize
 
-def drive_model(patchsize=(10,10),clusters=100):
+def drive_model(patchsize=(10,10),clusters=100,clahe=False,rescale=1):
 
     # Training Patches
     img = driveUtils.readimage('../training/images/')
-    img = driveUtils.dictimgscale(img,scaling=0.8)
-    #Scaling images
+    img = driveUtils.dictimgscale(img,scaling=rescale) #Scaling images
 
-
-    #img = driveUtils.eq_clahe(img,tilesize=(24,24))
-    #patches = driveUtils.computePatch(img,size=patchsize)
-    #img = driveUtils.adapteq(img)
-    
+    if clahe:
+        #img = driveUtils.eq_clahe(img,tilesize=(24,24))
+     
     # Segmentation Patches
     imgGT = driveUtils.readimage('../training/1st_manual/')
-    imgGT = driveUtils.dictimgscale(imgGT,scaling=0.8)
+    imgGT = driveUtils.dictimgscale(imgGT,scaling=rescale) # Scaling
 
     patchesGT = driveUtils.computePatch(imgGT,size=patchsize)
     # Generate Random numbers
@@ -66,13 +63,17 @@ def drive_model(patchsize=(10,10),clusters=100):
 
     return kmG,clusterGtG
 
-def test_predict(kmG,clusterGtG,location,patchsize=(10,10)):
+def test_predict(kmG,clusterGtG,location,patchsize=(10,10),rescale=1,clahe=False):
 
     test_img = driveUtils.readimage('../test/images/')
-    #Scaling
-    test_img = driveUtils.dictimgscale(test_img,scaling=0.8)
+    test_img = driveUtils.dictimgscale(test_img,scaling=1) #Scaling
+    
+    if clahe:
+        test_img = driveUtils.eq_clahe(test_img,tilesize=(24,24))
+    
+    #Determine Size of image
     a,b,c = test_img['11'].shape
-    #test_img = driveUtils.eq_clahe(test_img,tilesize=(24,24))
+    
     testPatchG = driveUtils.computePatch(test_img, channel=1,size=patchsize)
 
     if not os.path.exists('../Results/'+str(location)):
@@ -87,8 +88,8 @@ def test_predict(kmG,clusterGtG,location,patchsize=(10,10)):
         testimg = patchify.unpatchify(
             np.asarray([clusterGtG[j] for i, j in enumerate(patchGidx)]), (a,b))
 
-        testimg = resize(testimg, (584,565))
-        
+        #testimg = resize(testimg, (584,565))
+
         print "Saving_" + str(key)
 
         plt.imsave('../Results/'+str(location)+'/' + str(key) + '_G' +
@@ -261,3 +262,18 @@ test_predict(km,clusterModel,"clahe24_10_1000",patchsize=(10,10))
 #resize image
 km,clusterModel = drive_model(patchsize=(10,10),clusters=1000)
 test_predict(km,clusterModel,"resize08_10_1000",patchsize=(10,10))
+
+km,clusterModel = drive_model(patchsize=(10,10),clusters=1000)
+test_predict(km,clusterModel,"resize06_10_1000",patchsize=(10,10))
+
+km,clusterModel = drive_model(patchsize=(10,10),clusters=1000)
+test_predict(km,clusterModel,"resize15_10_1000",patchsize=(10,10))
+
+km,clusterModel = drive_model(patchsize=(21,21),clusters=1000)
+test_predict(km,clusterModel,"resize08_21_1000",patchsize=(21,21))
+
+km,clusterModel = drive_model(patchsize=(21,21),clusters=1000)
+test_predict(km,clusterModel,"resize06_21_1000",patchsize=(21,21))
+
+km,clusterModel = drive_model(patchsize=(21,21),clusters=1000)
+test_predict(km,clusterModel,"resize15_21_1000",patchsize=(21,21))
