@@ -91,6 +91,18 @@ def cluster(data):
 def whiten():
 	return
 
+def save_predict_img(img,location):
+    '''
+    Save the dict of predicted images
+
+    '''
+    # Create Directory if not exists
+    if not os.path.exists('../Results/'+str(location)):
+        os.makedirs('../Results/'+str(location))  
+
+    for key in img.keys():
+        plt.imsave('../Results/'+str(location)+'/' + str(key) + '_G' +
+                    '.png', img[key], cmap=cm.gray)
 
 
 def storePatch(imgPatch,dataset="training",normalize="no"):
@@ -296,7 +308,7 @@ def save_model(filename,keymdl):
 def adapteq(img):
 	'''
 	Adaptive Histogram Equalization
-	
+
 	img : dict
 	'''
 
