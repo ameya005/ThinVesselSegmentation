@@ -10,7 +10,7 @@ import numpy as np
 from scipy.stats import zscore
 from sklearn.metrics import roc_curve,auc
 from sklearn.metrics import f1_score,precision_score,recall_score,accuracy_score
-from skimage.morphology import binary_erosion, disk,rectangle
+from skimage.morphology import binary_erosion, disk,rectangle,binary_closing
 import cPickle as pickle
 from skimage import exposure
 import cv2
@@ -475,3 +475,31 @@ def km_to_list(clus,shape=(21,21)):
 
 	return img_list
 
+##################################################################
+#						Pre Processing 							 #
+
+def create_mask(img,thres=50):
+	'''
+	Creating Temporary mask from the raw images by thresholding the Red Channel
+
+	[TODO]
+	* Add otsu thresholding option
+
+	Input
+	-----
+
+	img:	dict, dictionary of images
+	thres:	int, threshold value
+
+	Return
+	------
+	im:		dict, dictionay of masks
+	'''
+	se = disk(8)
+	im = {}
+	for key in img.keys():
+		im[key] = (img[key][:,:,0]>thres).astype(uint8)
+		im[key] = binary_closing(im[key], se)
+
+
+	return im
