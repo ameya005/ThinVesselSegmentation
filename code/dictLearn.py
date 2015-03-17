@@ -33,14 +33,18 @@ def dictlearn():
 
     greenPatch = driveUtils.flattenlist(greenPatch)
     greenPatch = driveUtils.zscore_norm(greenPatch)
+   
+   	#Ground truth 
+    greenPatchGT = driveUtils.flattenlist(greenPatchGT)
+    #greenPatchGT = driveUtils.zscore_norm(greenPatchGT)
     ##################################################################
     # Learn Dictionary
 
-    km = MiniBatchDictionaryLearning(n_jobs=-1,n_components=500)
+    km = MiniBatchDictionaryLearning(n_jobs=-1,n_components=500,fit_algorithm='cd',transform_algorithm='lasso_cd',verbose=2,random_state=42)
     km.fit(greenPatch)
 
     #################################################################
-    greenIdx = km.predict(greenPatch)
+    greenIdx = km.transorm(greenPatch)
 
     greenCluster = {}
 
