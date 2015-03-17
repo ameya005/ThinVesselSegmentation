@@ -17,14 +17,14 @@ def drive_model(patchsize=(10,10),clusters=100,clahe=False,rescale=1):
     img = driveUtils.dictimgscale(img,scaling=rescale) #Scaling images
 
     if clahe:
-        #img = driveUtils.eq_clahe(img,tilesize=(24,24))
+        img = driveUtils.eq_clahe(img,tilesize=(24,24))
      
     # Segmentation Patches
     imgGT = driveUtils.readimage('../training/1st_manual/')
     imgGT = driveUtils.dictimgscale(imgGT,scaling=rescale) # Scaling
 
     patchesGT = driveUtils.computePatch(imgGT,size=patchsize)
-    # Generate Random numbers
+    # Generate Random numbexs
 
     patchesGreen = driveUtils.computePatch(img, channel=1,size=patchsize)
 
@@ -73,7 +73,7 @@ def test_predict(kmG,clusterGtG,location,patchsize=(10,10),rescale=1,clahe=False
     
     #Determine Size of image
     a,b,c = test_img['11'].shape
-    
+
     testPatchG = driveUtils.computePatch(test_img, channel=1,size=patchsize)
 
     if not os.path.exists('../Results/'+str(location)):
@@ -83,7 +83,7 @@ def test_predict(kmG,clusterGtG,location,patchsize=(10,10),rescale=1,clahe=False
         tPatchG = driveUtils.zscore_norm(driveUtils.flattenlist(testPatchG[key]))
         # tPatchG = driveUtils.flattenlist(testPatchG[key])
         # print "Debug Level 1.2"
-        patchGidx = kmG.predict(tPatchG)
+        patchGidx = (cl1.predict(tPatchG)).astype('uint8')
         # print "Debug Level 3"
         testimg = patchify.unpatchify(
             np.asarray([clusterGtG[j] for i, j in enumerate(patchGidx)]), (a,b))

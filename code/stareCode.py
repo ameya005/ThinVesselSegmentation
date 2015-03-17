@@ -131,12 +131,21 @@ def test_predict(test_img,kmG,clusterGtG,location,patchsize=(10,10),rescale=1,cl
     return test_img_predict
 
 
+def stare_plot(pred,gt,tit):
+    im_pred =np.asarray([(pred[key].ravel()).tolist() for key in pred.keys()])
+    im_gt =np.asarray([(gt[key].ravel()).tolist() for key in gt.keys()])
+    fpr,tpr,roc_auc = driveUtils.seg_eval_roc(im_pred, im_gt)
+    driveUtils.plot_roc(fpr, tpr, roc_auc,tit)
+
+
 def stare_call(location):
     '''
     Main call to the STARE Set
     '''
     #Read the images and split the dataset
     train_img,train_gt,test_img,test_gt= imagesplit()
+    train_mask = driveUtils.create_mask(train_img)
+    test_mask = driveUtils.create_mask(test_img)
     #Initialize the stare model
     km,clustermodel = stare_model(train_img, train_gt,clusters=1000)
     #Prediction on the test set
