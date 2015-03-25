@@ -132,7 +132,7 @@ def test_predict(test_img,kmG,clusterGtG,location,patchsize=(10,10),rescale=1,cl
 
 
 def stare_plot(pred,gt,tit):
-    im_pred =np.asarray([(pred[key].ravel()).tolist() for key in pred.keys()])
+    im_pred =np.asarray([(pred[key][:,:,0].ravel()).tolist() for key in pred.keys()])
     im_gt =np.asarray([(gt[key].ravel()).tolist() for key in gt.keys()])
     fpr,tpr,roc_auc = driveUtils.seg_eval_roc(im_pred, im_gt)
     driveUtils.plot_roc(fpr, tpr, roc_auc,tit)

@@ -277,3 +277,4 @@ test_predict(km,clusterModel,"resize06_21_1000",patchsize=(21,21))
 
 km,clusterModel = drive_model(patchsize=(21,21),clusters=1000)
 test_predict(km,clusterModel,"resize15_21_1000",patchsize=(21,21))
+

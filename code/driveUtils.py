@@ -475,6 +475,30 @@ def km_to_list(clus,shape=(21,21)):
 
 	return img_list
 
+def plot_images(img,x,y):
+	'''
+	Plotting images in (x,y) grid
+
+	Input
+	-----
+	img:	image array to plot
+	x:		No of rows
+	y:		No of columns
+	
+	'''
+	plt.figure(figsize=(4.2, 4))
+	for i, comp in enumerate(img):
+	    plt.subplot(x, y, i + 1)
+	    plt.imshow(comp, cmap=plt.cm.gray)
+	    plt.xticks(())
+	    plt.yticks(())
+
+	    if i == (x*y):
+	    	break
+	#plt.suptitle('Learnt Cluster Centres',
+	             #fontsize=16)
+	plt.subplots_adjust(0.08, 0.02, 0.92, 0.85, 0.08, 0.23)
+
 ##################################################################
 #						Pre Processing 							 #
 
