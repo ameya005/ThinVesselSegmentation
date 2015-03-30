@@ -13,6 +13,7 @@ import os
 from joblib import Parallel, delayed  
 import multiprocessing
 from skimage.transform import resize
+import cPickle as pickle
 
 
 def readimage(dir,size=(481,321)):
@@ -73,39 +74,96 @@ def bsd_model(patchsize=(10,10),clusters=100,clahe=False,rescale=1):
     patchesGT = driveUtils.computePatch(imgGT,size=patchsize)
     # Generate Random numbexs
 
+    patchesRed = driveUtils.computePatch(img, channel=0,size=patchsize)
     patchesGreen = driveUtils.computePatch(img, channel=1,size=patchsize)
+    patchesBlue = driveUtils.computePatch(img, channel=2,size=patchsize)
 
+    redPatch = []
     greenPatch = []
-    greenPatchGT = []
+    bluePatch = []
+    PatchGT = []
 
     for key in patchesGreen.keys():
         # rnumber = (np.random.sample(15000) * 250000).astype('int')
         rnumber = rand.sample(xrange(len(patchesGreen[key])), 10000)
         rnumber.extend(arange(100))
         greenPatch.extend(patchesGreen[key][rnumber])
-        greenPatchGT.extend(patchesGT[key][rnumber])
+        redPatch.extend(patchesRed[key][rnumber])
+        bluePatch.extend(patchesBlue[key][rnumber])
+        
+        PatchGT.extend(patchesGT[key][rnumber])
+
+    # Normalize Data
 
     greenPatch = driveUtils.flattenlist(greenPatch)
     greenPatch = driveUtils.zscore_norm(greenPatch)
 
+    redPatch = driveUtils.flattenlist(redPatch)
+    redPatch = driveUtils.zscore_norm(redPatch)
+
+    bluePatch = driveUtils.flattenlist(bluePatch)
+    bluePatch = driveUtils.zscore_norm(bluePatch)    
+
+    # Fit Data
+
     kmG = MiniBatchKMeans(n_clusters=clusters, batch_size=10000,verbose=2,reassignment_ratio=0.0001)
+    kmR = MiniBatchKMeans(n_clusters=clusters, batch_size=10000,verbose=2,reassignment_ratio=0.0001)
+    kmB = MiniBatchKMeans(n_clusters=clusters, batch_size=10000,verbose=2,reassignment_ratio=0.0001)
+    
     kmG.fit(greenPatch)
+    kmR.fit(redPatch)
+    kmB.fit(bluePatch)
 
+    # Predict Indexes
+    redIdx = kmG.predict(redPatch)
     greenIdx = kmG.predict(greenPatch)
+    blueIdx = kmG.predict(bluePatch)
 
+    # Predict Cluster Red
+
+    redCluster = {}
+
+    for i in range(clusters):
+        redCluster[i] = []
+
+    for i, j in enumerate(redIdx):
+        redCluster[j].append(PatchGT[i].astype('uint16'))
+
+    clusterGtR = {}
+
+    for i in redCluster.keys():
+        if len(redCluster[i]):
+            clusterGtR[i] = np.average(redCluster[i], axis=0)
+
+     # Predict Cluster Green
     greenCluster = {}
 
     for i in range(clusters):
         greenCluster[i] = []
 
     for i, j in enumerate(greenIdx):
-        greenCluster[j].append(greenPatchGT[i].astype('uint16'))
+        greenCluster[j].append(PatchGT[i].astype('uint16'))
 
     clusterGtG = {}
 
     for i in greenCluster.keys():
         if len(greenCluster[i]):
             clusterGtG[i] = np.average(greenCluster[i], axis=0)
+
+     # Predict Cluster Blue
+    blueCluster = {}
+
+    for i in range(clusters):
+        blueCluster[i] = []
+
+    for i, j in enumerate(blueIdx):
+        blueCluster[j].append(PatchGT[i].astype('uint16'))
+
+    clusterGtB = {}
+
+    for i in blueCluster.keys():
+        if len(blueCluster[i]):
+            clusterGtB[i] = np.average(blueCluster[i], axis=0)
 
 
     return kmG,clusterGtG
@@ -115,7 +173,7 @@ def test_predict(kmG,clusterGtG,location,patchsize=(10,10)):
     test_img = readimage('/home/kkhandel/Kushal/Projects/sem2/drivedataset/Datasets/BerkleySegment/BSR/BSDS500/data/images/train/')
 
     a,b,c = test_img.values()[1].shape
-
+    pre_imgs ={}
     testPatchG = driveUtils.computePatch(test_img, channel=1,size=patchsize)
 
     if not os.path.exists('../ResultsBSD/'+str(location)):
@@ -133,6 +191,13 @@ def test_predict(kmG,clusterGtG,location,patchsize=(10,10)):
         #testimg = resize(testimg, (584,565))
 
         print "Saving_" + str(key)
-
+        print testimg.shape
         plt.imsave('../ResultsBSD/'+str(location)+'/' + str(key) +
-                   '.png', testimg, cmap=cm.gray)
+                   '.png', testimg,format='png')
+
+        pre_imgs[key] = testimg
+
+    with open('ontrain.data', 'wb') as fp:
+		pickle.dump(pre_imgs, fp)
+
+
