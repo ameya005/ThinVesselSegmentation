@@ -21,6 +21,11 @@ import driveUtils
 from sklearn.decomposition import SparseCoder
 
 def creatGTdict(alpha,gtPatches):
+    ''' Creates GT Dict
+
+    Read the code from the training set and creates a dictionary mapping the Ground truth
+
+    '''
     sA,sB = alpha.shape
 
     posDict = {}
@@ -33,11 +38,17 @@ def creatGTdict(alpha,gtPatches):
         pos = np.where(row>0)[1]
         neg = np.where(row<0)[1]
 
-        posIndx = [row[0][x]*gtPatches[x] for x in pos]
-        negIndx = [row[0][x]*gtPatches[x] for x in neg]
+        # posIndx = [row[0][x]*gtPatches[x] for x in pos]
+        # negIndx = [row[0][x]*gtPatches[x] for x in neg]
 
-        posDict[i] = np.average(posIndx,axis=0)
-        negDict[i] = np.average(negIndx,axis=0)
+        posIndx = [gtPatches[x] for x in pos]
+        negIndx = [gtPatches[x] for x in neg]
+        
+        posWt = [row[0][x] for x in pos]
+        negWt = [row[0][x] for x in neg]
+
+        posDict[i] = np.average(posIndx,axis=0,weights=posWt)
+        negDict[i] = np.average(negIndx,axis=0,weights=negWt)
 
     return posDict,negDict
 
@@ -69,7 +80,7 @@ def dictlearn(patchsize=(10,10),clusters=500,clahe=False,rescale=1,thres = 0, sp
 
     greenPatch = driveUtils.flattenlist(greenPatch)
     greenPatch = driveUtils.zscore_norm(greenPatch)
-    greenPatchGT = driveUtils.flattenlist(greenPatchGT)
+    # greenPatchGT = driveUtils.flattenlist(greenPatchGT)
 
     ##########################################################################################
     '''
@@ -88,10 +99,11 @@ def dictlearn(patchsize=(10,10),clusters=500,clahe=False,rescale=1,thres = 0, sp
         # Parameters for the trainDL from SPAMS library
         param = {
         'K' : 500,
-        'lambda1' : 0.15,
+        'lambda1' : 0.01,
         'numThreads' : -1,
         'batchsize' : 400,
-        'iter' : 1000
+        'iter' : 1000,
+        'posAlpha': True
         }
 
         # Train the model to obtain the dictionary
@@ -103,8 +115,10 @@ def dictlearn(patchsize=(10,10),clusters=500,clahe=False,rescale=1,thres = 0, sp
         numThreads = -1
         
         greenIdx = spams.omp(X,D,L=L,eps= eps,return_reg_path = False,numThreads = numThreads)
+        # Making the patches scale to [0,1]
+        posD,negD =creatGTdict(greenIdx, np.asarray(greenPatchGT)/255)
 
-        return D
+        return D,posD,negD
 
     if not spams:
          # Zscore Normaliztion
@@ -187,3 +201,54 @@ def test_predict(km,groundDict,location,patchsize=(10,10),rescale=1,clahe=False,
 
 # Sparse Coder
 coder = SparseCoder(dictionary=D,transform_n_nonzero_coefs=10,transform_alpha=15,transform_algorithm='omp')
+
+# Test for SPAMS Coder
+
+def spams_test(D,posD,negD,param,key='11'):
+
+    test_img = driveUtils.readimage('../test/images/')
+    # Dimesnions of the read image
+    a,b,c = test_img['11'].shape
+    # Patch the image Channel : Green
+    testPatchG = driveUtils.computePatch(test_img, channel=1,size=patchsize)
+    # Compute the patches
+    tPatchG = np.asarray(driveUtils.zscore_norm(driveUtils.flattenlist(testPatchG[key])))
+
+    data = np.asfortranarray(tPatchG.T)
+    
+    # Ground Dict
+    # dG = ( np.asarray(posD.values()) + np.asarray(negD.values()) ) / 2
+    # dG = dG.reshape(dG.shape[0],-1)
+    # # Parameters for OMP
+
+    # Ground Dict Postive and negative
+    dGP = np.asarray(posD.values()) 
+    dGP = dGP.reshape(dGP.shape[0],-1)
+    dGN = np.asarray(negD.values()) 
+    dGN = dGN.reshape(dGN.shape[0],-1)
+
+    L = 50
+    eps = 1.0
+    numThreads = -1
+    
+    # Compute the sparse code
+    code = spams.omp(data,D,L=L,eps= eps,return_reg_path = False,numThreads = numThreads)
+
+    # FIXME
+    code = code.toarray()
+    code = code.T
+
+    codeP = (code>0).astype(int)
+    codeN = (code<=0).astype(int)
+
+    # timg = np.dot(codeP,dG)
+    # timg = timg.reshape(timg.shape[0],10,10)
+    # pimg = patchify.unpatchify(timg,(a,b))
+
+    timgP = np.dot(codeP,dGP)
+    timgP = timgP.reshape(timgP.shape[0],10,10)
+    pimg = patchify.unpatchify(timgP,(a,b))
+
+    timgN = np.dot(codeN,dGN)
+    timgN = timgN.reshape(timgN.shape[0],10,10)
+    nimg = patchify.unpatchify(timgN,(a,b))
