@@ -10,16 +10,18 @@ class BaseModel(object):
     """
     pass
 
-    def __init__(self,):
-        pass
+    def __init__(self, training, test):
+        self.training = training
+        self.test = test
 
 
-class DictLearn(object):
+class DictLearn(BaseModel):
     """
     Provides for the Dictionary Learning Setup from SPAMS library
     """
-    def __init__(self, ):
-        pass
+
+    def __init__(self, training, test):
+        super(DictLearn, self).__init__(training, test)
 
     def createDict(self, code, gtpatches):
         pass
@@ -34,7 +36,7 @@ class DictLearn(object):
         pass
 
 
-class ClusterLearn(object):
+class ClusterLearn(BaseModel):
     """
     Provides for the Cluster Learning Method
     """
