@@ -17,6 +17,14 @@ def check_path(path):
     return path
 
 
+class training():
+    pass
+
+
+class test():
+    pass
+
+
 class Dataset(object):
     """
     Base class for datasets
