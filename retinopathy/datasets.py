@@ -25,7 +25,7 @@ class Dataset(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, path):
-        self.path = path
+        self.path = check_path(path)
         self.patches = None
 
     @abc.abstractmethod
