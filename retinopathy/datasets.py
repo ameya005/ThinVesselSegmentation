@@ -17,14 +17,6 @@ def check_path(path):
     return path
 
 
-class training():
-    pass
-
-
-class test():
-    pass
-
-
 class Dataset(object):
     """
     Base class for datasets
@@ -33,7 +25,7 @@ class Dataset(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, path):
-        self.path_train = path
+        self.path = path
         self.patches = None
 
     @abc.abstractmethod
@@ -61,7 +53,7 @@ class Dataset(object):
         :return:
         """
 
-        img = self.read_train()
+        img = self.read_image(self.path + check_path('images'))
         if ravel:
             patch = {key: (self.patchify(img[key][:, :, channel], patch_size=size)).reshape((-1, size[0] * size[1])) for
                      key in img.keys()}
@@ -70,11 +62,9 @@ class Dataset(object):
 
         self.patches = patch
 
-        return self
-
     def compute_gt_mask(self, size, mask=0, ravel=0):
-        imggt = self.read_gt()
-        imgmask = self.read_mask()
+        imggt = self.read_image(check_path(self.path) + '1st_manual/')
+        imgmask = self.read_image(check_path(self.path) + check_path('mask'))
 
         if ravel:
             patchgt = {key: (self.patchify(imggt[key], patch_size=size)).reshape((-1, size[0] * size[1])) for key in
@@ -100,13 +90,13 @@ class Dataset(object):
         pass
 
     def read_train(self, folder_name='images'):
-        return self.read_image(self.path_train + check_path(folder_name))
+        return self.read_image(self.path + check_path(folder_name))
 
     def read_gt(self, folder_name='1st_manual'):
-        return self.read_image(self.path_train + check_path(folder_name))
+        return self.read_image(self.path + check_path(folder_name))
 
     def read_mask(self, folder_name='mask'):
-        return self.read_image(self.path_train + check_path(folder_name))
+        return self.read_image(self.path + check_path(folder_name))
 
     def read_test(self, folder_name='test'):
         pass
