@@ -60,7 +60,7 @@ class KmeansClusterLearn(BaseModel):
     Provides for the Cluster Learning Method
     """
 
-    def __init__(self, n_clusters, batch_size, patch_size, image_size, reassignment_rato=None, verbose=0):
+    def __init__(self, n_clusters,  patch_size, image_size, batch_size=10000, reassignment_rato=0.0001, verbose=0):
         self.patch_size = patch_size
         self.image_size = image_size
         self.n_clusters = n_clusters
