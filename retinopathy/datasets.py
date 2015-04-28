@@ -102,7 +102,7 @@ class Dataset(object):
     def read_train(self, folder_name='images'):
         return self.read_image(self.path_train + check_path(folder_name))
 
-    def read_gt(self, folder_name='gt'):
+    def read_gt(self, folder_name='1st_manual'):
         return self.read_image(self.path_train + check_path(folder_name))
 
     def read_mask(self, folder_name='mask'):
