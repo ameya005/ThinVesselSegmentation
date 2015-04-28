@@ -12,7 +12,10 @@ if __name__ == "__main__":
     ravel = 1
     clusters = 500
     img_size = (584, 565)
+
     Drive_train = Drive(path_train)
+
     Drive_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+    Drive_train.compute_gt_mask(size=patch_size, mask=1, ravel=1)
 
     kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size)
