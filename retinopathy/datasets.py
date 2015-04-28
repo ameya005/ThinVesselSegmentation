@@ -33,7 +33,7 @@ class Dataset(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, path):
-        self.path = path
+        self.path_train = path
         self.patches = None
 
     @abc.abstractmethod
@@ -100,13 +100,16 @@ class Dataset(object):
         pass
 
     def read_train(self, folder_name='images'):
-        return self.read_image(self.path + check_path(folder_name))
+        return self.read_image(self.path_train + check_path(folder_name))
 
     def read_gt(self, folder_name='gt'):
-        return self.read_image(self.path + check_path(folder_name))
+        return self.read_image(self.path_train + check_path(folder_name))
 
     def read_mask(self, folder_name='mask'):
-        return self.read_image(self.path + check_path(folder_name))
+        return self.read_image(self.path_train + check_path(folder_name))
+
+    def read_test(self, folder_name='test'):
+        pass
 
     @staticmethod
     def patchify(img, patch_size):
