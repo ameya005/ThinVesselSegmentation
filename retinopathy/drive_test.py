@@ -4,7 +4,7 @@ __author__ = 'kushal'
 from datasets import Drive
 from models import KmeansClusterLearn
 
-if __name__ == __main__:
+if __name__ == "__main__":
     path_train = '../training'
     path_test = '../test'
     patch_size = (10, 10)
