@@ -1,10 +1,18 @@
+import os
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
 __author__ = 'kushal'
 """
 Provides utilies and preporcessing facilities
 """
+
+
+def check_path(path):
+    if path[-1] != '/':
+        path += '/'
+    return path
 
 
 # noinspection PyArgumentList
@@ -20,3 +28,22 @@ def compute_random(X, y, samples=10000, seed=42):
 
     return x_new, y_new
 
+
+def check_dir_exists(location):
+    if not os.path.exists(location):
+        os.makedirs(location)
+
+
+def save_image(location, img, name):
+    # Correct the location
+    location = check_path(location)
+
+    # Check if directory exists
+    check_dir_exists(location)
+
+    # Now save the image
+    plt.imsave(location + str(name) + '.png', img)
+
+
+def save_model():
+    pass
