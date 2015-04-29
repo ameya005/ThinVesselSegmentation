@@ -1,3 +1,5 @@
+from utils import check_path
+
 __author__ = 'Kushal Khandelwal'
 '''
 Describes how the datasets are created and read
@@ -9,12 +11,6 @@ import abc
 from sklearn.feature_extraction import image as imfeatures
 import matplotlib.pyplot as plt
 import os
-
-
-def check_path(path):
-    if path[-1] != '/':
-        path += '/'
-    return path
 
 
 class Dataset(object):

@@ -10,6 +10,7 @@ from joblib import Parallel, delayed
 import multiprocessing
 from skimage.transform import resize
 
+
 def drive_model(patchsize=(10,10),clusters=100,clahe=False,rescale=1):
 
     # Training Patches

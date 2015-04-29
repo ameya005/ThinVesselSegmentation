@@ -19,7 +19,9 @@ if __name__ == "__main__":
     Drive_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
     Drive_train.compute_gt_mask(size=patch_size, mask=1, ravel=1)
 
+    # Extract patches for training
     patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT)
 
     kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size)
     kmmodel.fit(patch_train, patch_gt_train)
+
