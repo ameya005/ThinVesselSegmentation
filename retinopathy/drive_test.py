@@ -7,6 +7,14 @@ from datasets import Drive
 from models import KmeansClusterLearn, DictLearn
 import utils
 
+
+def make_all(X, predict_function, **kwargs):
+    img = {}
+    for key in X.keys():
+        img[key] = predict_function(X, **kwargs)
+
+    return img
+
 if __name__ == "__main__":
     path_train = '../../Datasets/DRIVE/training'
     path_test = '../../Datasets/DRIVE/test'

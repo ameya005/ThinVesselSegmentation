@@ -1,3 +1,8 @@
+__author__ = 'kushal'
+"""
+Provides different learning models
+"""
+
 import abc
 from collections import defaultdict
 import numpy as np
@@ -6,15 +11,13 @@ from sklearn.feature_extraction import image as skimage
 import spams
 from utils import zscore_norm
 
-__author__ = 'kushal'
-"""
-Provides different learning models
-"""
-
 
 class BaseModel(object):
     """
     Base Settings for the learning model
+    Inherit this for all models
+
+    Enforces a common API for all models
     """
     __metaclass__ = abc.ABCMeta
 
@@ -38,6 +41,11 @@ class BaseModel(object):
 
     @abc.abstractmethod
     def predict(self, X):
+
+        """
+        All models must define a predict methods.
+        :param X:
+        """
         pass
 
 

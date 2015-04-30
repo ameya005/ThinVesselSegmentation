@@ -1,5 +1,3 @@
-from utils import check_path
-
 __author__ = 'Kushal Khandelwal'
 '''
 Describes how the datasets are created and read
@@ -8,14 +6,16 @@ In this class we define the Dataset strucuture and methods to read the dataset.
 '''
 
 import abc
+import os
 from sklearn.feature_extraction import image as imfeatures
 import matplotlib.pyplot as plt
-import os
+from utils import check_path
 
 
 class Dataset(object):
     """
     Base class for datasets
+    Inherit this class for all the dataset classes.
     """
 
     __metaclass__ = abc.ABCMeta
@@ -59,6 +59,18 @@ class Dataset(object):
         self.patches = patch
 
     def compute_gt_mask(self, size, mask=0, ravel=0):
+        """
+        Call this function to read the GT files and Masks,
+        Stores them in the object itself.
+
+        :param size: tuple,
+            The size of patch
+        :param mask: int
+            if 1, the mask is all read, defaults to 0
+        :param ravel: int
+            if 1, the read images are flattened, defaults to 0
+
+        """
         imggt = self.read_image(check_path(self.path) + '1st_manual/')
         imgmask = self.read_image(check_path(self.path) + check_path('mask'))
 
@@ -83,9 +95,18 @@ class Dataset(object):
             self.patchesGT = patchgt
 
     def flattenarray(self):
+        """
+        To be implemented
+
+        """
         pass
 
     def read_train(self, folder_name='images'):
+        """
+
+        :param folder_name:
+        :return:
+        """
         return self.read_image(self.path + check_path(folder_name))
 
     def read_gt(self, folder_name='1st_manual'):
@@ -121,4 +142,5 @@ class Drive(Dataset):
 
 
 class Stare(Dataset):
-    pass
+    def read_image(self, path):
+        pass
