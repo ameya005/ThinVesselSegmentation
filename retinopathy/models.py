@@ -46,8 +46,9 @@ class DictLearn(BaseModel):
     Provides for the Dictionary Learning Setup from SPAMS library
     """
 
-    def __init__(self, n_clusters, patch_size, image_size, params, cparams):
+    def __init__(self, n_clusters, patch_size, image_size, params, cparams, normalize=1):
         super(DictLearn, self).__init__(n_clusters, patch_size, image_size)
+        self.normalize = normalize
         self.cparams = cparams
         self.params = params
 
@@ -55,7 +56,7 @@ class DictLearn(BaseModel):
     def createdict(code, y):
         s1, s2 = code.shape
 
-        posdict, negdict = {}, {}
+        posdict, negdict = defaultdict(np.zeros(y[0].shape)),defaultdict(np.zeros(y[0].shape))
 
         for i in range(s1):
             row = (code.getrow(i)).toarray()
@@ -74,7 +75,10 @@ class DictLearn(BaseModel):
         return posdict, negdict
 
     def fit(self, X, y):
-        X = np.asfortranarray(X)
+        if self.normalize:
+            X = zscore_norm(X)
+
+        X = np.asfortranarray(X.T)
 
         # learn the dictionary
         D = spams.trainDL(X, **self.params)
@@ -89,6 +93,10 @@ class DictLearn(BaseModel):
         return self
 
     def predict(self, X, soft=1, retind=False):
+
+        if self.normalize:
+            X = zscore_norm(X)
+
         X = np.asfortranarray(X)
 
         code = spams.omp(X, self.D, **self.cparams)
