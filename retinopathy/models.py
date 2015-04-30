@@ -100,7 +100,7 @@ class DictLearn(BaseModel):
         if self.normalize:
             X = zscore_norm(X)
 
-        X = np.asfortranarray(X)
+        X = np.asfortranarray(X.T)
 
         code = spams.omp(X, self.D, **self.cparams)
         code = code.toarray()
