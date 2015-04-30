@@ -3,6 +3,7 @@ from collections import defaultdict
 import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.feature_extraction import image as skimage
+import spams
 from utils import zscore_norm
 
 __author__ = 'kushal'
@@ -17,12 +18,17 @@ class BaseModel(object):
     """
     __metaclass__ = abc.ABCMeta
 
-    # def __init__(self, training, test):
-    # self.training = training
-    # self.test = test
+    def __init__(self, n_clusters, patch_size, image_size, verbose=0,
+                 normalize=True):
+        self.patch_size = patch_size
+        self.image_size = image_size
+        self.n_clusters = n_clusters
+        self.verbose = verbose
+        self._fit = 0
+        self.normalize = normalize
 
     @abc.abstractmethod
-    def fit(self, X, y=None):
+    def fit(self, X, y):
         """
         All models must define a fit method.
         This method would train the algorithm.
@@ -40,17 +46,65 @@ class DictLearn(BaseModel):
     Provides for the Dictionary Learning Setup from SPAMS library
     """
 
-    # def __init__(self, training, test):
-    # super(DictLearn, self).__init__(training, test)
+    def __init__(self, n_clusters, patch_size, image_size, params, cparams):
+        super(DictLearn, self).__init__(n_clusters, patch_size, image_size)
+        self.cparams = cparams
+        self.params = params
 
-    def createDict(self, code, gtpatches):
-        pass
+    @staticmethod
+    def createdict(code, y):
+        s1, s2 = code.shape
 
-    def fit(self):
-        pass
+        posdict, negdict = {}, {}
 
-    def predict(self):
-        pass
+        for i in range(s1):
+            row = (code.getrow(i)).toarray()
+            pos = np.where(row > 0)[1]
+            neg = np.where(row < 0)[1]
+
+            posidx = [y[x] for x in pos]
+            negidx = [y[x] for x in neg]
+
+            poswt = [row[0][x] for x in pos]
+            negwt = [row[0][x] for x in neg]
+
+            posdict[i] = np.average(posidx, axis=0, weights=poswt)
+            negdict[i] = np.average(negidx, axis=0, weights=negwt)
+
+        return posdict, negdict
+
+    def fit(self, X, y):
+        X = np.asfortranarray(X)
+
+        # learn the dictionary
+        D = spams.trainDL(X, **self.params)
+        x_code = spams.omp(X, D, **self.cparams)
+
+        posd, negd = self.createdict(x_code, y)
+
+        self._posd = posd
+        self._negd = negd
+        self.D = D
+
+        return self
+
+    def predict(self, X, soft=1):
+        X = np.asfortranarray(X)
+
+        code = spams.omp(X, self.D, **self.cparams)
+        code = code.toarray()
+        code = code.T
+
+        if self.verbose:
+            print "Data has been coded"
+
+        if soft:
+            codep = code.clip(0)
+            coden = code.clip(max=0)
+        else:
+            codep = (code > 0).astype(int)
+            coden = (code <= 0).astype(int)
+
 
     def test(self):
         pass
@@ -63,9 +117,7 @@ class KmeansClusterLearn(BaseModel):
 
     def __init__(self, n_clusters, patch_size, image_size, batch_size=10000, reassignment_rato=0.0001, verbose=0,
                  normalize=True):
-        self.patch_size = patch_size
-        self.image_size = image_size
-        self.n_clusters = n_clusters
+        super(KmeansClusterLearn, self).__init__(n_clusters, patch_size, image_size)
         self.batch_size = batch_size
         self.reassignemnt_ratio = reassignment_rato
         self.verbose = verbose

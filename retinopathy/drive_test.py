@@ -24,7 +24,7 @@ if __name__ == "__main__":
     # Extract patches for training
     patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT)
 
-    kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size)
+    kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size, normalize=False)
     kmmodel.fit(patch_train, patch_gt_train)
 
     Drive_test = Drive(path_test)
