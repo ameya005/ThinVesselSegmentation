@@ -56,7 +56,7 @@ class DictLearn(BaseModel):
     def createdict(code, y):
         s1, s2 = code.shape
 
-        posdict, negdict = defaultdict(np.zeros(y[0].shape)),defaultdict(np.zeros(y[0].shape))
+        posdict, negdict = defaultdict(lambda: np.zeros(y[0].shape)), defaultdict(lambda: np.zeros(y[0].shape))
 
         for i in range(s1):
             row = (code.getrow(i)).toarray()
@@ -72,7 +72,10 @@ class DictLearn(BaseModel):
             posdict[i] = np.average(posidx, axis=0, weights=poswt)
             negdict[i] = np.average(negidx, axis=0, weights=negwt)
 
-        return posdict, negdict
+            posd = np.asarray(posdict.values())
+            negd = np.asarray(negdict.values())
+
+        return posd, negd
 
     def fit(self, X, y):
         if self.normalize:
