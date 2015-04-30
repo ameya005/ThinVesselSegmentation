@@ -88,7 +88,7 @@ class DictLearn(BaseModel):
 
         return self
 
-    def predict(self, X, soft=1):
+    def predict(self, X, soft=1, retind=False):
         X = np.asfortranarray(X)
 
         code = spams.omp(X, self.D, **self.cparams)
@@ -105,6 +105,29 @@ class DictLearn(BaseModel):
             codep = (code > 0).astype(int)
             coden = (code <= 0).astype(int)
 
+        # Predict the positive of the image
+        pimg = self._predict(codep, self._posd)
+        nimg = self._predict(coden, self._negd)
+
+        img = pimg - nimg
+        img[img < 0] = 0
+        img /= img.max()
+
+        if retind:
+            return pimg, nimg
+
+        return img
+
+    def _predict(self, code, pos):
+        img = np.dot(code, pos)
+        sump = np.sum(code, axis=1)
+        sump[sump == 0] = 1
+
+        sump = sump.reshape(-1, 1)
+        img /= sump
+        img = img.reshape(img.shape[0], self.patch_size[0], self.patch_size[1])
+
+        return skimage.reconstruct_from_patches_2d(img, self.image_size)
 
     def test(self):
         pass
@@ -163,6 +186,7 @@ class KmeansClusterLearn(BaseModel):
         for i, j in enumerate(idx):
             img_arr[i] = self.gt_clusters[j]
 
+        # noinspection PyArgumentList
         img_arr = img_arr.reshape(-1, self.patch_size[0], self.patch_size[1])
 
         # Reconstruct the image
