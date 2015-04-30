@@ -1,6 +1,7 @@
 import os
 import random
 import numpy as np
+from scipy.stats import zscore
 import matplotlib.pyplot as plt
 
 __author__ = 'kushal'
@@ -17,8 +18,8 @@ def check_path(path):
 
 # noinspection PyArgumentList
 def compute_random(X, y, samples=10000, seed=42):
-    x_new = list
-    y_new = list
+    x_new = []
+    y_new = []
     for key in X.keys():
         rnumber = random.sample(xrange(len(X[key])), samples)
         x_new.extend(X[key][rnumber])
@@ -47,3 +48,11 @@ def save_image(location, img, name):
 
 def save_model():
     pass
+
+
+def zscore_norm(x, axis=1):
+    x = zscore(x, axis=axis)
+    x[np.isnan(x)] = 0
+    x[np.isinf(x)] = 0
+
+    return x

@@ -118,3 +118,7 @@ class Drive(Dataset):
         img = {os.path.splitext(file)[0][:2]: plt.imread(path + file) for file in file_list}
 
         return img
+
+
+class Stare(Dataset):
+    pass
