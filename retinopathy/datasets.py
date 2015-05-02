@@ -20,7 +20,10 @@ class Dataset(object):
 
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, path):
+    def __init__(self, path, gt_name, mask_name, img_name):
+        self.mask_name = mask_name
+        self.gt_name = gt_name
+        self.img_name = img_name
         self.path = check_path(path)
         self.patches = None
 
@@ -49,7 +52,7 @@ class Dataset(object):
         :return:
         """
 
-        img = self.read_image(self.path + check_path('images'))
+        img = self.read_image(self.path + check_path(self.img_name))
         if ravel:
             patch = {key: (self.patchify(img[key][:, :, channel], patch_size=size)).reshape((-1, size[0] * size[1])) for
                      key in img.keys()}
@@ -71,8 +74,8 @@ class Dataset(object):
             if 1, the read images are flattened, defaults to 0
 
         """
-        imggt = self.read_image(check_path(self.path) + '1st_manual/')
-        imgmask = self.read_image(check_path(self.path) + check_path('mask'))
+        imggt = self.read_image(check_path(self.path) + check_path(self.gt_name))
+        imgmask = self.read_image(check_path(self.path) + check_path(self.mask_name))
 
         if ravel:
             patchgt = {key: (self.patchify(imggt[key], patch_size=size)).reshape((-1, size[0] * size[1])) for key in
@@ -133,6 +136,9 @@ class Dataset(object):
 
 
 class Drive(Dataset):
+    def __init__(self, path, gt_name='1st_manual', mask_name='mask', img_name='images'):
+        super(Drive, self).__init__(path, gt_name, mask_name, img_name)
+
     def read_image(self, path):
         file_list = os.listdir(path)
 
@@ -142,5 +148,13 @@ class Drive(Dataset):
 
 
 class Stare(Dataset):
+
+    def __init__(self, path, gt_name='labels-ah', mask_name=None, img_name='raw'):
+        super(Stare, self).__init__(path, gt_name, mask_name, img_name)
+
     def read_image(self, path):
-        pass
+        file_list = os.listdir(path)
+
+        img = {os.path.splitext(file)[0][3:6]: plt.imread(path + file) for file in file_list}
+
+        return img
