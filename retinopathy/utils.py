@@ -1,3 +1,5 @@
+import h5py
+
 __author__ = 'kushal'
 """
 Provides utilies and preporcessing facilities
@@ -80,12 +82,32 @@ def save_image(location, img, name):
     plt.imsave(location + str(name) + '.png', img)
 
 
-def save_model():
+def save_model(name_model, location, **kwargs):
     """
     Save the model as h5 file
 
+    :type args: object
     """
-    pass
+    save_path = check_path(location) + name_model
+    to_save = kwargs
+
+    h5file = h5py.File(save_path, 'w')
+    h5file.create_dataset('model', data=to_save)
+    h5file.close()
+
+
+def read_model(name, location):
+    """
+    Read the model
+    :return:
+    """
+    loc = check_path(location) + name
+    h5file = h5py.File(loc, 'r')
+
+    mdl = h5file['model'][:]
+    h5file.close()
+
+    return mdl
 
 
 def zscore_norm(x, axis=1):
@@ -106,3 +128,7 @@ def zscore_norm(x, axis=1):
     x[np.isinf(x)] = 0
 
     return x
+
+
+def preprocessing():
+    pass
