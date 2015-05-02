@@ -162,10 +162,10 @@ class Stare(Dataset):
         return img
 
     @staticmethod
-    def create_train_test(split_ratio=0.5, img, imggt):
+    def create_train_test(img, imggt, split_ratio=0.5):
         # convert to structure array
         imgnd = np.array(img.items(), dtype=dtype)
-        imggtnd = np.array(img.items(), dtype=dtype)
+        imggtnd = np.array(imggt.items(), dtype=dtype)
 
         # Sort the structured array
         imgnd = imgnd[imgnd[:, 0].argsort()]
