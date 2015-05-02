@@ -1,4 +1,5 @@
 import h5py
+from skimage import transform
 
 __author__ = 'kushal'
 """
@@ -132,3 +133,20 @@ def zscore_norm(x, axis=1):
 
 def preprocessing():
     pass
+
+
+def rotate_images(imgs, angle=0):
+    for key in imgs.keys():
+        imgs[key] = transform.rotate(imgs[key], angle=angle)
+    return imgs
+
+
+def clahe(imgs, tilesize=(8, 8), clplmt=2.0):
+    clahe_el = cv2.createCLAHE(clipLimit=clplmt, tileGridSize=tilesize)
+    for key in imgs.keys():
+        imgs[key] = clahe_el.apply(imgs[key])
+
+
+# TO DOlist
+# TODO: Implement t-sNE for visualization
+# TODO: Compute Script
