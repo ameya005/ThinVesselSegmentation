@@ -1,3 +1,5 @@
+from sklearn.cross_validation import train_test_split
+
 __author__ = 'Kushal Khandelwal'
 '''
 Describes how the datasets are created and read
@@ -9,6 +11,7 @@ import abc
 import os
 from sklearn.feature_extraction import image as imfeatures
 import matplotlib.pyplot as plt
+import numpy as np
 from utils import check_path
 
 
@@ -148,7 +151,6 @@ class Drive(Dataset):
 
 
 class Stare(Dataset):
-
     def __init__(self, path, gt_name='labels-ah', mask_name=None, img_name='raw'):
         super(Stare, self).__init__(path, gt_name, mask_name, img_name)
 
@@ -158,3 +160,25 @@ class Stare(Dataset):
         img = {os.path.splitext(file)[0][3:6]: plt.imread(path + file) for file in file_list}
 
         return img
+
+    @staticmethod
+    def create_train_test(split_ratio=0.5, img, imggt):
+        # convert to structure array
+        imgnd = np.array(img.items(), dtype=dtype)
+        imggtnd = np.array(img.items(), dtype=dtype)
+
+        # Sort the structured array
+        imgnd = imgnd[imgnd[:, 0].argsort()]
+        imggtnd = imggtnd[imggtnd[:, 0].argsort()]
+
+        # Train Test split
+        img_train, img_test, gt_train, gt_test = train_test_split(imgnd, imggtnd, test_size=split_ratio,
+                                                                  random_state=42)
+
+        # Convert the structured array to dict to reuse old code
+        img_train = dict(img_train)
+        img_test = dict(img_test)
+        gt_train = dict(gt_train)
+        gt_test = dict(gt_test)
+
+        return img_train, gt_train, img_test, gt_test
