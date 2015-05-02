@@ -175,8 +175,20 @@ class HRF(Dataset):
 
 
 class ARIA(Dataset):
+    def __init__(self, path, gt_name='aria_a_vessel', mask_name=None, img_name='aria_a_markups', setname='a'):
+        super(ARIA, self).__init__(path, gt_name, mask_name, img_name)
+        g_name = 'aria_' + setname + '_vessel'
+        im_name = 'aria_' + setname + '_markups'
+
+        self.gt_name = g_name
+        self.img_name = im_name
+
     def read_image(self, path):
-        pass
+        file_list = os.listdir(path)
+
+        img = {os.path.splitext(file_key)[0][5:]: plt.imread(path + file_key) for file_key in file_list}
+
+        return img
 
 
 # noinspection PyUnboundLocalVariable
