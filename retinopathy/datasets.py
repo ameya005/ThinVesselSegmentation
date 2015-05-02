@@ -157,28 +157,58 @@ class Stare(Dataset):
     def read_image(self, path):
         file_list = os.listdir(path)
 
-        img = {os.path.splitext(file)[0][3:6]: plt.imread(path + file) for file in file_list}
+        img = {os.path.splitext(file_key)[0][3:6]: plt.imread(path + file_key) for file_key in file_list}
 
         return img
 
-    @staticmethod
-    def create_train_test(img, imggt, split_ratio=0.5):
-        # convert to structure array
-        imgnd = np.array(img.items(), dtype=dtype)
-        imggtnd = np.array(imggt.items(), dtype=dtype)
 
-        # Sort the structured array
-        imgnd = imgnd[imgnd[:, 0].argsort()]
-        imggtnd = imggtnd[imggtnd[:, 0].argsort()]
+class HRF(Dataset):
+    def __init__(self, path, gt_name='gt', mask_name='mask', img_name='images'):
+        super(HRF, self).__init__(path, gt_name, mask_name, img_name)
 
-        # Train Test split
-        img_train, img_test, gt_train, gt_test = train_test_split(imgnd, imggtnd, test_size=split_ratio,
-                                                                  random_state=42)
+    def read_image(self, path):
+        file_list = os.listdir(path)
 
-        # Convert the structured array to dict to reuse old code
-        img_train = dict(img_train)
-        img_test = dict(img_test)
-        gt_train = dict(gt_train)
-        gt_test = dict(gt_test)
+        img = {os.path.splitext(file_key)[0]: plt.imread(path + file_key) for file_key in file_list}
 
+        return img
+
+
+class ARIA(Dataset):
+    def read_image(self, path):
+        pass
+
+
+# noinspection PyUnboundLocalVariable
+def create_train_test(img, imggt, mask=None, split_ratio=0.5, mask_exists=0):
+    # convert to structure array
+
+    imgnd = np.array(img.items())
+    imggtnd = np.array(imggt.items())
+    if mask_exists:
+        masknd = np.array(mask.items())
+
+    # Sort the structured array
+    imgnd = imgnd[imgnd[:, 0].argsort()]
+    imggtnd = imggtnd[imggtnd[:, 0].argsort()]
+    if mask_exists:
+        masknd = masknd[masknd[:, 0].argsort()]
+
+    # train test split
+    if mask_exists:
+        img_train, img_test, gt_train, gt_test, mask_train, mask_test = train_test_split(imgnd, imggtnd, masknd,
+                                                                                         test_size=split_ratio)
+    else:
+        img_train, img_test, gt_train, gt_test = train_test_split(imgnd, imggtnd, test_size=split_ratio)
+
+    # Convert the structured array to dict to reuse old code
+    img_train = dict(img_train)
+    img_test = dict(img_test)
+    gt_train = dict(gt_train)
+    gt_test = dict(gt_test)
+    if mask_exists:
+        mask_train = dict(mask_train)
+        mask_test = dict(mask_test)
+        return img_train, gt_train, img_test, gt_test, mask_train, mask_test
+    else:
         return img_train, gt_train, img_test, gt_test
