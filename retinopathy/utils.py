@@ -118,6 +118,7 @@ def save_model_pickle(name_model, location, data_save):
     h5file.create_dataset('model', data=data_save)
     h5file.close()
 
+
 def read_model(name, location):
     """
     Read the model
@@ -171,3 +172,31 @@ def clahe(imgs, tilesize=(8, 8), clplmt=2.0):
 # TO DOlist
 # TODO: Implement t-sNE for visualization
 # TODO: Compute Script
+
+def read_image(path):
+    file_list = os.listdir(path)
+
+    img = {os.path.splitext(file)[0][:2]: plt.imread(path + file) for file in file_list}
+
+    return img
+
+
+def combine_iters(patch_size, clusters, path):
+    iters = xrange(4)
+    for i in iters:
+        folder_name = 'Drive_iter' + str(i) + '_p' + str(patch_size) + 'clus' + str(clusters)
+
+        if i > 0:
+            for key in img.keys():
+                img1[key] += img[key]
+
+        img = read_image(check_path(path) + check_path(folder_name))
+        if i == 0:
+            img1 = img
+    location = 'Drive_p_' + str(patch_size) + '_clus_'+str(clusters)
+    check_dir_exists(check_path(path+location))
+    for key in img1.keys():
+        im = img1[key]/5.0
+        plt.imsave(str(path+location) + '/' + str(key) + '_G' + '.png', im, cmap=plt.cm.gray)
+
+

@@ -18,6 +18,7 @@ def make_all(X, predict_function, **kwargs):
 
 
 if __name__ == "__main__":
+
     def drive_test():
         path_train = '../../Datasets/DRIVE/training'
         path_test = '../../Datasets/DRIVE/test'
@@ -49,7 +50,8 @@ if __name__ == "__main__":
                     # Drive_test.compute_gt_mask(size=patch_size, mask=1, ravel=1)
 
                     test_img = defaultdict()
-                    location = '../Results/Drive/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(clusters)
+                    location = '../Results/Drive/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+                        clusters)
                     utils.check_dir_exists(location)
                     location_model = '../Results/Drive/Models/' + 'Drive_iter' + str(i) + '_p' + str(
                         patch_size[0]) + 'clus' + str(clusters) + '.mdl'
@@ -60,20 +62,22 @@ if __name__ == "__main__":
                         plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray)
 
 
-                # # Dictionary Learning Model
-                # params = {
-                # 'K': 500,
-                # 'lambda1': 1.0,
-                # 'numThreads': -1,
-                #     'batchsize': 512,
-                #     'iter': 500,
-                #     'posAlpha': True
-                # }
-                # cparams = {
-                #     'L': 10,
-                #     'eps': 1.0,
-                #     'numThreads': -1
-                # }
-                #
-                # dictmodel = DictLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size, params=params, cparams= cparams)
-                # dictmodel.fit(patch_train, patch_gt_train)
+    def dict_model():
+        # Dictionary Learning Model
+        params = {
+            'K': 500,
+            'lambda1': 1.0,
+            'numThreads': -1,
+            'batchsize': 512,
+            'iter': 500,
+            'posAlpha': True
+        }
+        cparams = {
+            'L': 10,
+            'eps': 1.0,
+            'numThreads': -1
+        }
+
+        dictmodel = DictLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size, params=params,
+                              cparams=cparams)
+        dictmodel.fit(patch_train, patch_gt_train)
