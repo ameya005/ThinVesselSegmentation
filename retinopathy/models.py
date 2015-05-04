@@ -185,7 +185,7 @@ class KmeansClusterLearn(BaseModel):
                 gt_clusters[key] = np.average(gt_clusters[key], axis=0)
 
         self.gt_clusters = gt_clusters
-        self._model = km
+        self.model = km
         self._fit = 1
 
     def predict(self, X):
@@ -194,7 +194,7 @@ class KmeansClusterLearn(BaseModel):
 
         if not self._fit:
             raise Exception("Please fit your model")
-        return self._model.predict(X)
+        return self.model.predict(X)
 
     def predict_image(self, X):
         if not self._fit:

@@ -49,16 +49,19 @@ if __name__ == "__main__":
             test_img = defaultdict()
             location = '../Results/Drive/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(clusters)
             utils.check_dir_exists(location)
+            location_model = '../Results/Drive/Models/' + 'Drive_iter' + str(i) + '_p' + str(
+                patch_size[0]) + 'clus' + str(clusters) + '.mdl'
 
+            utils.save_object(kmmodel, location_model)
             for key in Drive_test.patches.keys():
                 test_img[key] = kmmodel.predict_image(Drive_test.patches[key])
-                plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key])
+                plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray)
 
 
                 # # Dictionary Learning Model
                 # params = {
                 # 'K': 500,
-                #     'lambda1': 1.0,
+                # 'lambda1': 1.0,
                 #     'numThreads': -1,
                 #     'batchsize': 512,
                 #     'iter': 500,
