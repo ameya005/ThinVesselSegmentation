@@ -179,7 +179,7 @@ class HRF(Dataset):
 class ARIA(Dataset):
     def __init__(self, path, gt_name='aria_a_vessel', mask_name=None, img_name='aria_a_markups', setname='a'):
         super(ARIA, self).__init__(path, gt_name, mask_name, img_name)
-        g_name = 'aria_' + setname + '_vessel'
+        g_name = 'aria_' + setname + '_markup_vessel'
         im_name = 'aria_' + setname + '_markups'
 
         self.gt_name = g_name
