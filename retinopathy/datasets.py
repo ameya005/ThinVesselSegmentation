@@ -78,7 +78,9 @@ class Dataset(object):
 
         """
         imggt = self.read_image(check_path(self.path) + check_path(self.gt_name))
-        imgmask = self.read_image(check_path(self.path) + check_path(self.mask_name))
+
+        if mask:
+            imgmask = self.read_image(check_path(self.path) + check_path(self.mask_name))
 
         if ravel:
             patchgt = {key: (self.patchify(imggt[key], patch_size=size)).reshape((-1, size[0] * size[1])) for key in
