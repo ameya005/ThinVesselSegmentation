@@ -224,3 +224,28 @@ def create_train_test(img, imggt, mask=None, split_ratio=0.5, mask_exists=0):
         return img_train, gt_train, img_test, gt_test, mask_train, mask_test
     else:
         return img_train, gt_train, img_test, gt_test
+
+
+class CHASE(Dataset):
+    def read_image(self, path):
+        file_list = os.listdir(path)
+
+        img = {os.path.splitext(file_key)[0][6:]: plt.imread(path + file_key) + '.jpg' for file_key in file_list}
+
+        return img
+
+    def read_image(self, path):
+        file_list = os.listdir(path)
+
+        img = {os.path.splitext(file_key)[0][6:]: plt.imread(path + file_key) for file_key in file_list if
+               os.path.splitext(file_key)[1] == '.jpg'}
+
+        return img
+
+    def read_seg(self, path):
+        file_list = os.listdir(path)
+
+        img = {os.path.splitext(file_key)[0][6:]: plt.imread(path + file_key) for file_key in file_list if
+               os.path.splitext(file_key)[1] == '.png'}
+
+        return img

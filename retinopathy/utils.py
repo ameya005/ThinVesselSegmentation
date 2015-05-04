@@ -1,5 +1,6 @@
 import h5py
 from skimage import transform
+import cv2
 
 __author__ = 'kushal'
 """
