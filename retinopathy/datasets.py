@@ -78,7 +78,9 @@ class Dataset(object):
 
         """
         imggt = self.read_image(check_path(self.path) + check_path(self.gt_name))
-        imgmask = self.read_image(check_path(self.path) + check_path(self.mask_name))
+
+        if mask:
+            imgmask = self.read_image(check_path(self.path) + check_path(self.mask_name))
 
         if ravel:
             patchgt = {key: (self.patchify(imggt[key], patch_size=size)).reshape((-1, size[0] * size[1])) for key in
@@ -177,7 +179,7 @@ class HRF(Dataset):
 class ARIA(Dataset):
     def __init__(self, path, gt_name='aria_a_vessel', mask_name=None, img_name='aria_a_markups', setname='a'):
         super(ARIA, self).__init__(path, gt_name, mask_name, img_name)
-        g_name = 'aria_' + setname + '_vessel'
+        g_name = 'aria_' + setname + '_markup_vessel'
         im_name = 'aria_' + setname + '_markups'
 
         self.gt_name = g_name

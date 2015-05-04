@@ -1,6 +1,8 @@
 import h5py
 from skimage import transform
 import cv2
+import cPickle as pickle
+
 
 __author__ = 'kushal'
 """
@@ -84,19 +86,37 @@ def save_image(location, img, name):
     plt.imsave(location + str(name) + '.png', img)
 
 
-def save_model(name_model, location, **kwargs):
+def save_model(name_model, location, data_save):
     """
     Save the model as h5 file
 
-    :type args: object
+    :type name_model: object
+
     """
-    save_path = check_path(location) + name_model
-    to_save = kwargs
+    save_path = check_path(location) + name_model + '.mdl'
 
     h5file = h5py.File(save_path, 'w')
-    h5file.create_dataset('model', data=to_save)
+    h5file.create_dataset('model', data=data_save)
     h5file.close()
 
+
+def save_object(obj, filename):
+    with open(filename, 'wb') as output:
+        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
+
+def save_model_pickle(name_model, location, data_save):
+    """
+    Save the model as h5 file
+
+    :type name_model: object
+
+    """
+    save_path = check_path(location) + name_model + '.mdl'
+
+    h5file = h5py.File(save_path, 'w')
+    h5file.create_dataset('model', data=data_save)
+    h5file.close()
 
 def read_model(name, location):
     """
@@ -106,7 +126,7 @@ def read_model(name, location):
     loc = check_path(location) + name
     h5file = h5py.File(loc, 'r')
 
-    mdl = h5file['model'][:]
+    mdl = h5file['model'].value
     h5file.close()
 
     return mdl
