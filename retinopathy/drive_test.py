@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
         Drive_train = Drive(path_train)
 
-        for patch_size in [(9, 9), (15, 15), (21, 21), (33, 33)]:
+        for patch_size in [(11, 11)]:
             Drive_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
             Drive_train.compute_gt_mask(size=patch_size, mask=1, ravel=1)
             for clusters in [100, 200, 500, 1000]:

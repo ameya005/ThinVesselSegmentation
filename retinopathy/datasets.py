@@ -56,9 +56,6 @@ class Dataset(object):
         """
 
         img = self.read_image(self.path + check_path(self.img_name))
-        if rotate:
-            img = rotate_images(img, angle=rotate)
-
         if contrast_enhancement:
             if ravel:
                 patch = {

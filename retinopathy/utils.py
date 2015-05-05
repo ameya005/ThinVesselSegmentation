@@ -156,8 +156,8 @@ def preprocessing():
 
 
 def rotate_images(imgs, angle=0):
-    for key in imgs.keys():
-        imgs[key] = transform.rotate(imgs[key], angle=angle)
+    for i in xrange(imgs.shape[0]):
+        imgs[i] = rotate(imgs[i], angle=angle)
     return imgs
 
 
@@ -199,6 +199,6 @@ def combine_iters(patch_size, clusters, path):
         plt.imsave(str(path + location) + '/' + str(key) + '_G' + '.png', im, cmap=plt.cm.gray)
 
 
-# for patch_size in [10]:
-#     for clusters in [100, 200, 500]:
-#         combine_iters(patch_size, clusters, './')
+        # for patch_size in [10]:
+        # for clusters in [100, 200, 500]:
+        #         combine_iters(patch_size, clusters, './')
