@@ -200,6 +200,6 @@ def combine_iters(patch_size, clusters, path):
         plt.imsave(str(path + location) + '/' + str(key) + '_G' + '.png', im, cmap=plt.cm.gray)
 
 
-for patch_size in [10]:
-    for clusters in [100, 200, 500]:
-        combine_iters(patch_size, clusters, './')
+# for patch_size in [10]:
+#     for clusters in [100, 200, 500]:
+#         combine_iters(patch_size, clusters, './')
