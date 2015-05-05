@@ -63,20 +63,18 @@ class Dataset(object):
             if ravel:
                 patch = {
                     key: (self.patchify(clahe(img[key][:, :, channel]), patch_size=size)).reshape(
-                        (-1, size[0] * size[1]))
-                    for
-                    key in img.keys()}
+                        (-1, size[0] * size[1])) for key in img.keys()}
             else:
                 patch = {key: (self.patchify(clahe(img[key][:, :, channel]), patch_size=size)) for key in img.keys()}
         else:
             if ravel:
                 patch = {
-                    key: (self.patchify(clahe(img[key][:, :, channel]), patch_size=size)).reshape(
+                    key: (self.patchify((img[key][:, :, channel]), patch_size=size)).reshape(
                         (-1, size[0] * size[1]))
                     for
                     key in img.keys()}
             else:
-                patch = {key: (self.patchify(clahe(img[key][:, :, channel]), patch_size=size)) for key in img.keys()}
+                patch = {key: (self.patchify((img[key][:, :, channel]), patch_size=size)) for key in img.keys()}
         self.patches = patch
 
     def compute_gt_mask(self, size, mask=0, ravel=0):
