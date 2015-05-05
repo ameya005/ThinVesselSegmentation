@@ -12,7 +12,7 @@ import os
 from sklearn.feature_extraction import image as imfeatures
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import check_path, clahe
+from utils import check_path, clahe, rotate_images
 
 
 class Dataset(object):
@@ -42,7 +42,7 @@ class Dataset(object):
         """
         pass
 
-    def compute_patch(self, size, channel, ravel=0, contrast_enhancement=1):
+    def compute_patch(self, size, channel, ravel=0, contrast_enhancement=0, rotate=0):
         """
         Computes the patches for the images of give size
         :param size: tuple
@@ -56,15 +56,27 @@ class Dataset(object):
         """
 
         img = self.read_image(self.path + check_path(self.img_name))
+        if rotate:
+            img = rotate_images(img, angle=rotate)
+
         if contrast_enhancement:
-            img = clahe(img)
-
-        if ravel:
-            patch = {key: (self.patchify(img[key][:, :, channel], patch_size=size)).reshape((-1, size[0] * size[1])) for
-                     key in img.keys()}
+            if ravel:
+                patch = {
+                    key: (self.patchify(clahe(img[key][:, :, channel]), patch_size=size)).reshape(
+                        (-1, size[0] * size[1]))
+                    for
+                    key in img.keys()}
+            else:
+                patch = {key: (self.patchify(clahe(img[key][:, :, channel]), patch_size=size)) for key in img.keys()}
         else:
-            patch = {key: (self.patchify(img[key][:, :, channel], patch_size=size)) for key in img.keys()}
-
+            if ravel:
+                patch = {
+                    key: (self.patchify(clahe(img[key][:, :, channel]), patch_size=size)).reshape(
+                        (-1, size[0] * size[1]))
+                    for
+                    key in img.keys()}
+            else:
+                patch = {key: (self.patchify(clahe(img[key][:, :, channel]), patch_size=size)) for key in img.keys()}
         self.patches = patch
 
     def compute_gt_mask(self, size, mask=0, ravel=0):

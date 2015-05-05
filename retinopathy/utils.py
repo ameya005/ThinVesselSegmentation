@@ -161,10 +161,9 @@ def rotate_images(imgs, angle=0):
     return imgs
 
 
-def clahe(imgs, tilesize=(8, 8), clplmt=2.0):
+def clahe(imgs, tilesize=(8, 8), clplmt=2.0, multi=0):
     clahe_el = cv2.createCLAHE(clipLimit=clplmt, tileGridSize=tilesize)
-    for key in imgs.keys():
-        imgs[key] = clahe_el.apply(imgs[key])
+    imgs = clahe_el.apply(imgs)
 
     return imgs
 
