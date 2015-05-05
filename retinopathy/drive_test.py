@@ -81,3 +81,17 @@ if __name__ == "__main__":
         dictmodel = DictLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size, params=params,
                               cparams=cparams)
         dictmodel.fit(patch_train, patch_gt_train)
+
+
+# learning different models
+
+    def different_models():
+        path_train = '../../Datasets/DRIVE/training'
+        path_test = '../../Datasets/DRIVE/test'
+        patch_size = (10, 10)
+        channel = 1
+        ravel = 1
+        clusters = 500
+        img_size = (584, 565)
+
+

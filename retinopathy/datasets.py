@@ -12,7 +12,7 @@ import os
 from sklearn.feature_extraction import image as imfeatures
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import check_path
+from utils import check_path, clahe
 
 
 class Dataset(object):
@@ -42,7 +42,7 @@ class Dataset(object):
         """
         pass
 
-    def compute_patch(self, size, channel, ravel=0):
+    def compute_patch(self, size, channel, ravel=0, contrast_enhancement=0):
         """
         Computes the patches for the images of give size
         :param size: tuple
@@ -56,11 +56,15 @@ class Dataset(object):
         """
 
         img = self.read_image(self.path + check_path(self.img_name))
+        patch = {key: (self.patchify(img[key][:, :, channel], patch_size=size)) for key in img.keys()}
+
+        if contrast_enhancement:
+            for key in patch.keys():
+                patch[key] = clahe(patch[key])
+
         if ravel:
-            patch = {key: (self.patchify(img[key][:, :, channel], patch_size=size)).reshape((-1, size[0] * size[1])) for
-                     key in img.keys()}
-        else:
-            patch = {key: (self.patchify(img[key][:, :, channel], patch_size=size)) for key in img.keys()}
+            for key in patch.keys():
+                patch[key] = patch[key].reshape((-1, size[0] * size[1]))
 
         self.patches = patch
 

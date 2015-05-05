@@ -1,9 +1,3 @@
-import h5py
-from skimage import transform
-import cv2
-import cPickle as pickle
-
-
 __author__ = 'kushal'
 """
 Provides utilies and preporcessing facilities
@@ -11,9 +5,13 @@ Provides utilies and preporcessing facilities
 
 import os
 import random
+import cPickle as pickle
 import numpy as np
 from scipy.stats import zscore
 import matplotlib.pyplot as plt
+import h5py
+from skimage import transform
+import cv2
 
 
 def check_path(path):
@@ -168,6 +166,8 @@ def clahe(imgs, tilesize=(8, 8), clplmt=2.0):
     for key in imgs.keys():
         imgs[key] = clahe_el.apply(imgs[key])
 
+    return imgs
+
 
 # TO DOlist
 # TODO: Implement t-sNE for visualization
@@ -193,10 +193,13 @@ def combine_iters(patch_size, clusters, path):
         img = read_image(check_path(path) + check_path(folder_name))
         if i == 0:
             img1 = img
-    location = 'Drive_p_' + str(patch_size) + '_clus_'+str(clusters)
-    check_dir_exists(check_path(path+location))
+    location = 'Drive_p_' + str(patch_size) + '_clus_' + str(clusters)
+    check_dir_exists(check_path(path + location))
     for key in img1.keys():
-        im = img1[key]/5.0
-        plt.imsave(str(path+location) + '/' + str(key) + '_G' + '.png', im, cmap=plt.cm.gray)
+        im = img1[key] / 5.0
+        plt.imsave(str(path + location) + '/' + str(key) + '_G' + '.png', im, cmap=plt.cm.gray)
 
 
+for patch_size in [10]:
+    for clusters in [100, 200, 500]:
+        combine_iters(patch_size, clusters, './')
