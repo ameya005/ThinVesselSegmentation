@@ -27,7 +27,7 @@ if __name__ == "__main__":
         ravel = 1
         clusters = 500
         img_size = (584, 565)
-
+        rotation = 1
         Drive_train = Drive(path_train)
 
         for patch_size in [(11, 11)]:
@@ -37,8 +37,29 @@ if __name__ == "__main__":
 
                 for i in xrange(5):
                     # Extract patches for training
-                    patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT)
 
+                    if rotation:
+                        patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT,
+                                                                           samples=2000)
+
+                        patch_train = patch_train.reshape(-1, patch_size[0], patch_size[1])
+                        patch_gt_train = patch_gt_train.reshape(-1, patch_size[0], patch_size[1])
+
+                        patch_train = np.concatenate((
+                            patch_train, utils.rotate_images(patch_train, 30), utils.rotate_images(patch_train, 60),
+                            utils.rotate_images(patch_train, 90), utils.rotate_images(patch_train, 120),
+                            utils.rotate_images(patch_train, 150)))
+
+                        patch_gt_train = np.concatenate((
+                            patch_gt_train, utils.rotate_images(patch_gt_train, 30),
+                            utils.rotate_images(patch_gt_train, 60),
+                            utils.rotate_images(patch_gt_train, 90), utils.rotate_images(patch_gt_train, 120),
+                            utils.rotate_images(patch_gt_train, 150)))
+
+                        patch_train = patch_train.reshape(-1, patch_size[0] * patch_size[1])
+                        patch_gt_train = patch_gt_train.reshape(-1, patch_size[0] * patch_size[1])
+                    else:
+                        patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT, )
                     # CLuster Model
                     kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size,
                                                  normalize=True)
@@ -53,7 +74,7 @@ if __name__ == "__main__":
                     location = '../Results/Drive/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
                         clusters)
                     utils.check_dir_exists(location)
-                    location_model = '../Results/Drive/Models/' + 'Drive_iter' + str(i) + '_p' + str(
+                    location_model = '../Results/Drive/Models/' + 'Drive_iter_rotation' + str(i) + '_p' + str(
                         patch_size[0]) + 'clus' + str(clusters) + '.mdl'
 
                     utils.save_object(kmmodel, location_model)
@@ -83,7 +104,7 @@ if __name__ == "__main__":
         dictmodel.fit(patch_train, patch_gt_train)
 
 
-# learning different models
+    # learning different models
 
     def different_models():
         path_train = '../../Datasets/DRIVE/training'
