@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from collections import defaultdict
 import matplotlib.pyplot as plt
+import numpy as np
 
 __author__ = 'kushal'
 
