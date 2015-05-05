@@ -1,3 +1,5 @@
+from skimage.transform import rotate
+
 __author__ = 'kushal'
 """
 Provides utilies and preporcessing facilities
