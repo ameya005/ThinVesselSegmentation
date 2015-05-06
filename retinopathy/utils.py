@@ -204,3 +204,109 @@ def combine_iters(patch_size, clusters, path):
         # for patch_size in [10]:
         # for clusters in [100, 200, 500]:
         #         combine_iters(patch_size, clusters, './')
+
+def seg_eval_roc(img, gt):
+    """
+    Evaluation of segmentation ( FPR,TPR, ROC_AUC)
+
+    Inputs
+    ------
+    img:	ndarray, Predicted Image
+    gt:		ndarray, Ground Truth image
+
+    Returns
+    -------
+    FPR, TPR , ROC
+
+    """
+    img = img.ravel()
+    gt = gt.ravel() / 255
+
+    fpr, tpr, _ = roc_curve(gt, img)
+    roc_auc = auc(fpr, tpr)
+
+    return fpr, tpr, roc_auc
+
+
+def seg_eval_roc(img, gt):
+    """
+    Evaluation of segmentation ( FPR,TPR, ROC_AUC)
+
+    Inputs
+    ------
+    img:	ndarray, Predicted Image
+    gt:		ndarray, Ground Truth image
+
+    Returns
+    -------
+    FPR, TPR , ROC
+
+    """
+    img = img.ravel()
+    gt = gt.ravel() / 255
+
+    fpr, tpr, _ = roc_curve(gt, img)
+    roc_auc = auc(fpr, tpr)
+
+    return fpr, tpr, roc_auc
+
+
+def seg_eval_prc(img, gt):
+    img = img.ravel()
+    gt = gt.ravel() / 255.
+    precision, recall, thresholds = precision_recall_curve(gt, img)
+    roc_auc = auc(precision, recall)
+    return precision, recall, thresholds, auc
+
+
+def plot_roc(fpr, tpr, roc_auc, lkey="Ours"):
+    """
+    Plot function for ROC curve.
+    See : seg_eval_roc() for calculating the given values
+
+    Inputs:
+    -------
+    FPR,TPR,ROC_AUC
+    lkey:	Plot legend value
+
+    """
+    # plt.figure()
+    plt.plot(fpr, tpr, label=str(lkey) + '_ROC curve (area = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic')
+    plt.legend(loc="lower right")
+    plt.grid()
+    plt.show()
+
+
+def compute_stat(img, gt1_img, mask=None):
+    im_pred = []
+    im_gt = []
+    if mask:
+        im_mask = []
+
+    for key in img.keys():
+        im_pred.extend((img[key].ravel()).tolist())
+        im_gt.extend((gt1_img[key].ravel()).tolist())
+        if mask:
+            im_mask.extend((mask[key].ravel()).tolist())
+
+    im_pred = np.asarray(im_pred)
+    im_gt = np.asarray(im_gt)
+    im_mask = np.asarray(im_mask)
+
+    nonzero = np.nonzero(im_mask)[0]
+
+    im_pred = im_pred[nonzero]
+    im_gt = im_gt[nonzero]
+
+    fpr, tpr, roc_auc = seg_eval_roc(im_pred, im_gt)
+    precision, recall, thresholds, roc_auc_prc = seg_eval_prc(im_pred, im_gt)
+
+    statistics = {'fpr': fpr, 'tpr': tpr, 'roc_auc': roc_auc, 'precision': precision, 'recall': recall,
+                  'thresh': thresholds, "auc_prc": roc_auc_prc}
+    return statistics
