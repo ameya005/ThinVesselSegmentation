@@ -105,6 +105,13 @@ def save_object(obj, filename):
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
 
+def read_object(filename):
+    with open(filename, 'rb') as output:
+        obj = pickle.load(output)
+    return obj
+
+
+
 def save_model_pickle(name_model, location, data_save):
     """
     Save the model as h5 file

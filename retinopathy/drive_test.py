@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 from collections import defaultdict
 import matplotlib.pyplot as plt
+
 import numpy as np
+
 
 __author__ = 'kushal'
 
-from datasets import Drive
+from datasets import Drive, Stare, CHASE, ARIA, HRF
 from models import KmeansClusterLearn, DictLearn
 import utils
 
@@ -28,20 +30,19 @@ if __name__ == "__main__":
         ravel = 1
         clusters = 500
         img_size = (584, 565)
-        rotation = 1
+        rotation = 0
         Drive_train = Drive(path_train)
 
         for patch_size in [(11, 11)]:
             Drive_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
             Drive_train.compute_gt_mask(size=patch_size, mask=1, ravel=1)
-            for clusters in [100, 200, 500, 1000]:
+            for clusters in [1000]:
 
-                for i in xrange(5):
+                for i in xrange(1):
                     # Extract patches for training
 
                     if rotation:
-                        patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT,
-                                                                           samples=2000)
+                        patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT)
 
                         patch_train = patch_train.reshape(-1, patch_size[0], patch_size[1])
                         patch_gt_train = patch_gt_train.reshape(-1, patch_size[0], patch_size[1])
@@ -115,5 +116,17 @@ if __name__ == "__main__":
         ravel = 1
         clusters = 500
         img_size = (584, 565)
+
+    path_model = '../Results/Drive/Models/Drive_iter4_p10clus500.mdl'
+
+    def test_drive(model, dataset):
+        kmmodel = utils.read_object(model)
+
+
+
+
+
+
+
 
 

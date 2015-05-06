@@ -239,12 +239,15 @@ def create_train_test(img, imggt, mask=None, split_ratio=0.5, mask_exists=0):
 
 
 class CHASE(Dataset):
-    def read_image(self, path):
-        file_list = os.listdir(path)
+    # def read_image(self, path):
+    #     file_list = os.listdir(path)
+    #
+    #     img = {os.path.splitext(file_key)[0][6:]: plt.imread(path + file_key) + '.jpg' for file_key in file_list}
+    #
+    #     return img
 
-        img = {os.path.splitext(file_key)[0][6:]: plt.imread(path + file_key) + '.jpg' for file_key in file_list}
-
-        return img
+    def __init__(self, path, gt_name=None, mask_name=None, img_name=None):
+        super(CHASE, self).__init__(path, gt_name, mask_name, img_name)
 
     def read_image(self, path):
         file_list = os.listdir(path)
