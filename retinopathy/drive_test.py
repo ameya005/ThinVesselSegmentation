@@ -208,7 +208,8 @@ if __name__ == "__main__":
         stare_train = '../../Datasets/STARE/'
         chase_train = '../../Datasets/CHASEDB/'
         aria_train = '../../Datasets/ARIA/'
-        patch_size = (10, 10)
+        drive_train = '../../Datasets/DRIVE/training'
+        patch_size = (15, 15)
         channel = 1
         ravel = 1
         clusters = 1000
@@ -218,6 +219,18 @@ if __name__ == "__main__":
         i = 1
         mod_name = 'Drive_iter_' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(clusters) + '.mdl'
         kmmodel = utils.read_object(model_loc + mod_name)
+
+        print "Start on stare"
+        # Test on Stare
+        # img_size = (605, 700)
+        # kmmodel.image_size = img_size
+        dataset_train = Drive(drive_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/Drive_Expt2/train/drive/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
 
         print "Start on stare"
         # Test on Stare
