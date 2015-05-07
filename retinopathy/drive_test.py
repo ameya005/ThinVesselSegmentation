@@ -221,6 +221,8 @@ if __name__ == "__main__":
 
         print "Start on stare"
         # Test on Stare
+        img_size = (605, 700)
+        kmmodel.image_size = img_size
         dataset_train = Stare(stare_train)
         dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
 
@@ -236,7 +238,8 @@ if __name__ == "__main__":
         # Test on chase
         dataset_train = CHASE(chase_train)
         dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
-
+        img_size = (960, 999)
+        kmmodel.image_size = img_size
         test_img = defaultdict()
         location = '../Results/Drive_Expt2/train/chase/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
             clusters)
@@ -250,7 +253,8 @@ if __name__ == "__main__":
         # Test on chase
         dataset_train = ARIA(aria_train)
         dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
-
+        img_size = (576, 768)
+        kmmodel.image_size = img_size
         test_img = defaultdict()
         location = '../Results/Drive_Expt2/train/aria/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
             clusters)
