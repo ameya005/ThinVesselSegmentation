@@ -220,7 +220,7 @@ if __name__ == "__main__":
         mod_name = 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(clusters) + '.mdl'
         kmmodel = utils.read_object(model_loc + mod_name)
 
-        print "Start on stare"
+        print "Start on Drive Train"
         # Test on Stare
         # img_size = (605, 700)
         # kmmodel.image_size = img_size
@@ -231,6 +231,10 @@ if __name__ == "__main__":
         location = '../Results/Drive_Expt2/train/drive/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
             clusters)
         utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
 
         print "Start on stare"
         # Test on Stare
