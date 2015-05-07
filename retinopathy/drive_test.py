@@ -122,10 +122,143 @@ if __name__ == "__main__":
     def test_drive(model, dataset):
         kmmodel = utils.read_object(model)
 
+    def drive_test_1():
+        path_train = '../../Datasets/DRIVE/training'
+        path_test = '../../Datasets/DRIVE/test'
+        patch_size = (10, 10)
+        channel = 1
+        ravel = 1
+        clusters = 1000
+        img_size = (584, 565)
+        rotation = 0
+        Drive_train = Drive(path_train)
 
+        Drive_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        Drive_train.compute_gt_mask(size=patch_size, mask=1, ravel=1)
 
+        if rotation:
+            patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT)
 
+            patch_train = patch_train.reshape(-1, patch_size[0], patch_size[1])
+            patch_gt_train = patch_gt_train.reshape(-1, patch_size[0], patch_size[1])
 
+            patch_train = np.concatenate((
+                patch_train, utils.rotate_images(patch_train, 30), utils.rotate_images(patch_train, 60),
+                utils.rotate_images(patch_train, 90), utils.rotate_images(patch_train, 120),
+                utils.rotate_images(patch_train, 150)))
+
+            patch_gt_train = np.concatenate((
+                patch_gt_train, utils.rotate_images(patch_gt_train, 30),
+                utils.rotate_images(patch_gt_train, 60),
+                utils.rotate_images(patch_gt_train, 90), utils.rotate_images(patch_gt_train, 120),
+                utils.rotate_images(patch_gt_train, 150)))
+
+            patch_train = patch_train.reshape(-1, patch_size[0] * patch_size[1])
+            patch_gt_train = patch_gt_train.reshape(-1, patch_size[0] * patch_size[1])
+        else:
+            patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT)
+        # CLuster Model
+        kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size,
+                                     normalize=True)
+        kmmodel.fit(patch_train, patch_gt_train)
+
+        Drive_test = Drive(path_test)
+
+        Drive_test.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        # Drive_test.compute_gt_mask(size=patch_size, mask=1, ravel=1)
+
+        test_img = defaultdict()
+        location = '../Results/Drive_Expt1/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+        location_model = '../Results/Drive/Models/' + 'Drive_iter_' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(clusters) + '.mdl'
+
+        utils.save_object(kmmodel, location_model)
+        for key in Drive_test.patches.keys():
+            test_img[key] = kmmodel.predict_image(Drive_test.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray)
+
+    def drive_ontrain():
+        model_loc = '../Results/Drive/Models/'
+        path_train = '../../Datasets/DRIVE/training'
+        patch_size = (10, 10)
+        channel = 1
+        ravel = 1
+        clusters = 1000
+        img_size = (584, 565)
+        rotation = 0
+        Drive_train = Drive(path_train)
+        Drive_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        for i in xrange(5):
+            mod_name = 'Drive_iter_' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(clusters) + '.mdl'
+            kmmodel = utils.read_object(model_loc + mod_name)
+
+            test_img = defaultdict()
+            location = '../Results/Drive_Expt1/train/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+                clusters)
+            utils.check_dir_exists(location)
+
+            for key in Drive_train.patches.keys():
+                test_img[key] = kmmodel.predict_image(Drive_train.patches[key])
+                plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray)
+
+    def drive_onothers():
+        model_loc = '../Results/Drive/Models/'
+        stare_train = '../../Datasets/STARE/'
+        chase_train = '../../Datasets/CHASEDB/'
+        aria_train = '../../Datasets/ARIA/'
+        patch_size = (10, 10)
+        channel = 1
+        ravel = 1
+        clusters = 1000
+        img_size = (584, 565)
+        rotation = 0
+
+        i = 1
+        mod_name = 'Drive_iter_' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(clusters) + '.mdl'
+        kmmodel = utils.read_object(model_loc + mod_name)
+
+        print "Start on stare"
+        # Test on Stare
+        dataset_train = Stare(stare_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/Drive_Expt2/train/stare/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+        print "start on chase"
+        # Test on chase
+        dataset_train = CHASE(chase_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/Drive_Expt2/train/chase/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "start on aria"
+        # Test on chase
+        dataset_train = ARIA(aria_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/Drive_Expt2/train/aria/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
 
 
 

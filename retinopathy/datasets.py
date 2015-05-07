@@ -246,7 +246,7 @@ class CHASE(Dataset):
     #
     #     return img
 
-    def __init__(self, path, gt_name=None, mask_name=None, img_name=None):
+    def __init__(self, path, gt_name='gt1', mask_name=None, img_name='images'):
         super(CHASE, self).__init__(path, gt_name, mask_name, img_name)
 
     def read_image(self, path):
