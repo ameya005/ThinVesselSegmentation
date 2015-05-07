@@ -28,17 +28,17 @@ if __name__ == "__main__":
         patch_size = (10, 10)
         channel = 1
         ravel = 1
-        clusters = 500
+        clusters = 1000
         img_size = (584, 565)
         rotation = 0
         Drive_train = Drive(path_train)
 
-        for patch_size in [(11, 11)]:
+        for patch_size in [(10, 10)]:
             Drive_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
             Drive_train.compute_gt_mask(size=patch_size, mask=1, ravel=1)
             for clusters in [1000]:
 
-                for i in xrange(1):
+                for i in xrange(5):
                     # Extract patches for training
 
                     if rotation:
@@ -61,7 +61,7 @@ if __name__ == "__main__":
                         patch_train = patch_train.reshape(-1, patch_size[0] * patch_size[1])
                         patch_gt_train = patch_gt_train.reshape(-1, patch_size[0] * patch_size[1])
                     else:
-                        patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT, )
+                        patch_train, patch_gt_train = utils.compute_random(Drive_train.patches, Drive_train.patchesGT)
                     # CLuster Model
                     kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size,
                                                  normalize=True)
@@ -73,10 +73,10 @@ if __name__ == "__main__":
                     # Drive_test.compute_gt_mask(size=patch_size, mask=1, ravel=1)
 
                     test_img = defaultdict()
-                    location = '../Results/Drive/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+                    location = '../Results/Drive_Expt1/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
                         clusters)
                     utils.check_dir_exists(location)
-                    location_model = '../Results/Drive/Models/' + 'Drive_iter_rotation' + str(i) + '_p' + str(
+                    location_model = '../Results/Drive/Models/' + 'Drive_iter_' + str(i) + '_p' + str(
                         patch_size[0]) + 'clus' + str(clusters) + '.mdl'
 
                     utils.save_object(kmmodel, location_model)
