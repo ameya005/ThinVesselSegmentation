@@ -217,7 +217,7 @@ if __name__ == "__main__":
         rotation = 0
 
         i = 1
-        mod_name = 'Drive_iter_' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(clusters) + '.mdl'
+        mod_name = 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(clusters) + '.mdl'
         kmmodel = utils.read_object(model_loc + mod_name)
 
         print "Start on stare"
