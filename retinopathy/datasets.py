@@ -252,8 +252,7 @@ class CHASE(Dataset):
     def read_image(self, path):
         file_list = os.listdir(path)
 
-        img = {os.path.splitext(file_key)[0][6:]: plt.imread(path + file_key) for file_key in file_list if
-               os.path.splitext(file_key)[1] == '.jpg'}
+        img = {os.path.splitext(file_key)[0][6:]: plt.imread(path + file_key) for file_key in file_list}
 
         return img
 
