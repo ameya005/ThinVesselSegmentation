@@ -73,7 +73,8 @@ if __name__ == "__main__":
                     # Drive_test.compute_gt_mask(size=patch_size, mask=1, ravel=1)
 
                     test_img = defaultdict()
-                    location = '../Results/Drive_Expt1/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+                    location = '../Results/Drive_Expt1/' + 'Drive_iter' + str(i) + '_p' + str(
+                        patch_size[0]) + 'clus' + str(
                         clusters)
                     utils.check_dir_exists(location)
                     location_model = '../Results/Drive/Models/' + 'Drive_iter_' + str(i) + '_p' + str(
@@ -195,7 +196,8 @@ if __name__ == "__main__":
             kmmodel = utils.read_object(model_loc + mod_name)
 
             test_img = defaultdict()
-            location = '../Results/Drive_Expt1/train/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+            location = '../Results/Drive_Expt1/train/' + 'Drive_iter' + str(i) + '_p' + str(
+                patch_size[0]) + 'clus' + str(
                 clusters)
             utils.check_dir_exists(location)
 
@@ -228,7 +230,8 @@ if __name__ == "__main__":
         dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
 
         test_img = defaultdict()
-        location = '../Results/Drive_Expt2/train/drive/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+        location = '../Results/Drive_Expt2/train/drive/' + 'Drive_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
             clusters)
         utils.check_dir_exists(location)
 
@@ -244,7 +247,8 @@ if __name__ == "__main__":
         dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
 
         test_img = defaultdict()
-        location = '../Results/Drive_Expt2/train/stare/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+        location = '../Results/Drive_Expt2/train/stare/' + 'Drive_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
             clusters)
         utils.check_dir_exists(location)
 
@@ -258,7 +262,8 @@ if __name__ == "__main__":
         img_size = (960, 999)
         kmmodel.image_size = img_size
         test_img = defaultdict()
-        location = '../Results/Drive_Expt2/train/chase/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+        location = '../Results/Drive_Expt2/train/chase/' + 'Drive_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
             clusters)
         utils.check_dir_exists(location)
 
@@ -273,7 +278,8 @@ if __name__ == "__main__":
         img_size = (576, 768)
         kmmodel.image_size = img_size
         test_img = defaultdict()
-        location = '../Results/Drive_Expt2/train/aria/' + 'Drive_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+        location = '../Results/Drive_Expt2/train/aria/' + 'Drive_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
             clusters)
         utils.check_dir_exists(location)
 
@@ -281,6 +287,377 @@ if __name__ == "__main__":
             test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
             plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
 
+    def chase_model():
+
+        model_loc = '../Results/Drive/Models/'
+        stare_train = '../../Datasets/STARE/'
+        chase_train = '../../Datasets/CHASEDB/'
+        aria_train = '../../Datasets/ARIA/'
+        drive_train = '../../Datasets/DRIVE/training'
+        patch_size = (15, 15)
+        channel = 1
+        ravel = 1
+        clusters = 1000
+        img_size = (584, 565)
+        rotation = 0
+        i = 1
+        # kmmodel = utils.read_object(model_loc + mod_name)
+        # Train on chase DB
+        dataset_train = CHASE(chase_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        dataset_train.compute_gt_mask(size=patch_size, ravel=ravel)
+        img_size = (960, 999)
+
+        patch_train, patch_gt_train = utils.compute_random(dataset_train.patches, dataset_train.patchesGT)
+        # CLuster Model
+        kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size,
+                                     normalize=True)
+        kmmodel.fit(patch_train, patch_gt_train)
+
+        location = '../Results/Chase/Chase_Expt1/' + 'Chase_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+        location_model = '../Results/Chase/Models/' + 'Chase_iter_' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(clusters) + '.mdl'
+
+        utils.save_object(kmmodel, location_model)
+
+        # Prediction on others
+        stare_train = '../../Datasets/STARE/'
+        chase_train = '../../Datasets/CHASEDB/'
+        aria_train = '../../Datasets/ARIA/'
+        drive_train = '../../Datasets/DRIVE/training/'
+        drive_test = '../../Datasets/DRIVE/test/'
+
+        print "Start on Drive Train"
+        # Test on Stare
+        img_size = (584, 565)
+        kmmodel.image_size = img_size
+        dataset_train = Drive(drive_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/Chase/' + 'drivetrain_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "Start on Drive Test"
+        # Test on Stare
+        img_size = (584, 565)
+        kmmodel.image_size = img_size
+        dataset_train = Drive(drive_test)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/Chase/' + 'drivetest_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "Start on stare"
+        # Test on Stare
+        img_size = (605, 700)
+        kmmodel.image_size = img_size
+        dataset_train = Stare(stare_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/Chase/' + 'stare_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+        print "start on chase"
+        # Test on chase
+        dataset_train = CHASE(chase_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        img_size = (960, 999)
+        kmmodel.image_size = img_size
+        test_img = defaultdict()
+        location = '../Results/Chase/' + 'Chase_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "start on aria"
+        # Test on chase
+        dataset_train = ARIA(aria_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        img_size = (576, 768)
+        kmmodel.image_size = img_size
+        test_img = defaultdict()
+        location = '../Results/Chase/' + 'aria_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+    def stare_model():
+
+        model_loc = '../Results/Drive/Models/'
+        stare_train = '../../Datasets/STARE/'
+        chase_train = '../../Datasets/CHASEDB/'
+        aria_train = '../../Datasets/ARIA/'
+        drive_train = '../../Datasets/DRIVE/training'
+        patch_size = (15, 15)
+        channel = 1
+        ravel = 1
+        clusters = 1000
+        img_size = (584, 565)
+        rotation = 0
+        i = 1
+        # kmmodel = utils.read_object(model_loc + mod_name)
+        # Train on chase DB
+        dataset_train = Stare(stare_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        dataset_train.compute_gt_mask(size=patch_size, ravel=ravel)
+        img_size = (605, 700)
+
+        patch_train, patch_gt_train = utils.compute_random(dataset_train.patches, dataset_train.patchesGT)
+        # CLuster Model
+        kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size,
+                                     normalize=True)
+        kmmodel.fit(patch_train, patch_gt_train)
+
+        location = '../Results/stare/stare/' + 'Chase_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+        location_model = '../Results/stare/Models/' + 'stare_iter_' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(clusters) + '.mdl'
+
+        utils.save_object(kmmodel, location_model)
+
+        # Prediction on others
+        stare_train = '../../Datasets/STARE/'
+        chase_train = '../../Datasets/CHASEDB/'
+        aria_train = '../../Datasets/ARIA/'
+        drive_train = '../../Datasets/DRIVE/training/'
+        drive_test = '../../Datasets/DRIVE/test/'
+
+        print "Start on Drive Train"
+        # Test on Stare
+        img_size = (584, 565)
+        kmmodel.image_size = img_size
+        dataset_train = Drive(drive_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/stare/' + 'drivetrain_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "Start on Drive Test"
+        # Test on Stare
+        img_size = (584, 565)
+        kmmodel.image_size = img_size
+        dataset_train = Drive(drive_test)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/stare/' + 'drivetest_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "Start on stare"
+        # Test on Stare
+        img_size = (605, 700)
+        kmmodel.image_size = img_size
+        dataset_train = Stare(stare_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/stare/' + 'stare_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+        print "start on chase"
+        # Test on chase
+        dataset_train = CHASE(chase_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        img_size = (960, 999)
+        kmmodel.image_size = img_size
+        test_img = defaultdict()
+        location = '../Results/stare/' + 'Chase_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "start on aria"
+        # Test on chase
+        dataset_train = ARIA(aria_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        img_size = (576, 768)
+        kmmodel.image_size = img_size
+        test_img = defaultdict()
+        location = '../Results/stare/' + 'aria_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+    def aria_model():
+
+        model_loc = '../Results/Drive/Models/'
+        stare_train = '../../Datasets/STARE/'
+        chase_train = '../../Datasets/CHASEDB/'
+        aria_train = '../../Datasets/ARIA/'
+        drive_train = '../../Datasets/DRIVE/training'
+        patch_size = (15, 15)
+        channel = 1
+        ravel = 1
+        clusters = 1000
+        img_size = (584, 565)
+        rotation = 0
+        i = 1
+        # kmmodel = utils.read_object(model_loc + mod_name)
+        # Train on chase DB
+        dataset_train = ARIA(aria_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        dataset_train.compute_gt_mask(size=patch_size, ravel=ravel)
+        img_size = (576, 768)
+
+        patch_train, patch_gt_train = utils.compute_random(dataset_train.patches, dataset_train.patchesGT)
+        # CLuster Model
+        kmmodel = KmeansClusterLearn(n_clusters=clusters, patch_size=patch_size, image_size=img_size,
+                                     normalize=True)
+        kmmodel.fit(patch_train, patch_gt_train)
+
+        location = '../Results/aria/aria/' + 'aria_iter' + str(i) + '_p' + str(patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+        location_model = '../Results/aria/Models/' + 'stare_iter_' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(clusters) + '.mdl'
+
+        utils.save_object(kmmodel, location_model)
+
+        # Prediction on others
+        stare_train = '../../Datasets/STARE/'
+        chase_train = '../../Datasets/CHASEDB/'
+        aria_train = '../../Datasets/ARIA/'
+        drive_train = '../../Datasets/DRIVE/training/'
+        drive_test = '../../Datasets/DRIVE/test/'
+
+        print "Start on Drive Train"
+        # Test on Stare
+        img_size = (584, 565)
+        kmmodel.image_size = img_size
+        dataset_train = Drive(drive_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/aria/' + 'drivetrain_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "Start on Drive Test"
+        # Test on Stare
+        img_size = (584, 565)
+        kmmodel.image_size = img_size
+        dataset_train = Drive(drive_test)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/aria/' + 'drivetest_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "Start on stare"
+        # Test on Stare
+        img_size = (605, 700)
+        kmmodel.image_size = img_size
+        dataset_train = Stare(stare_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+
+        test_img = defaultdict()
+        location = '../Results/aria/' + 'stare_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+        print "start on chase"
+        # Test on chase
+        dataset_train = CHASE(chase_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        img_size = (960, 999)
+        kmmodel.image_size = img_size
+        test_img = defaultdict()
+        location = '../Results/aria/' + 'Chase_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
+
+        print "start on aria"
+        # Test on chase
+        dataset_train = ARIA(aria_train)
+        dataset_train.compute_patch(size=patch_size, channel=channel, ravel=ravel)
+        img_size = (576, 768)
+        kmmodel.image_size = img_size
+        test_img = defaultdict()
+        location = '../Results/aria/' + 'aria_iter' + str(i) + '_p' + str(
+            patch_size[0]) + 'clus' + str(
+            clusters)
+        utils.check_dir_exists(location)
+
+        for key in dataset_train.patches.keys():
+            test_img[key] = kmmodel.predict_image(dataset_train.patches[key])
+            plt.imsave(str(location) + '/' + str(key) + '_G' + '.png', test_img[key], cmap=plt.cm.gray, format='png')
 
 
 
