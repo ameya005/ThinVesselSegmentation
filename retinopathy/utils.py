@@ -1,4 +1,6 @@
+from collections import defaultdict
 from skimage.transform import rotate
+from sklearn.metrics import precision_recall_curve, auc, roc_curve, accuracy_score, f1_score
 
 __author__ = 'kushal'
 """
@@ -13,7 +15,7 @@ from scipy.stats import zscore
 import matplotlib.pyplot as plt
 import h5py
 from skimage import transform
-import cv2
+# import cv2
 
 
 def check_path(path):
@@ -111,7 +113,6 @@ def read_object(filename):
     return obj
 
 
-
 def save_model_pickle(name_model, location, data_save):
     """
     Save the model as h5 file
@@ -184,15 +185,15 @@ def clahe(imgs, tilesize=(8, 8), clplmt=2.0, multi=0):
 def read_image(path):
     file_list = os.listdir(path)
 
-    img = {os.path.splitext(file)[0][:2]: plt.imread(path + file) for file in file_list}
+    img = {os.path.splitext(file)[0][:3]: plt.imread(path + file) for file in file_list}
 
     return img
 
 
 def combine_iters(patch_size, clusters, path):
-    iters = xrange(4)
-    for i in iters:
-        folder_name = 'Drive_iter' + str(i) + '_p' + str(patch_size) + 'clus' + str(clusters)
+    iters = [9, 10, 15, 21, 33]
+    for i, j in enumerate(iters):
+        folder_name = 'Drive' + '_p_' + str(j) + '_clus_' + str(clusters)
 
         if i > 0:
             for key in img.keys():
@@ -201,16 +202,18 @@ def combine_iters(patch_size, clusters, path):
         img = read_image(check_path(path) + check_path(folder_name))
         if i == 0:
             img1 = img
-    location = 'Drive_p_' + str(patch_size) + '_clus_' + str(clusters)
+    # location = 'Drive_p_' + str(patch_size) + '_clus_' + str(clusters)
+    location = 'Drive' + '_clus_' + str(clusters)
     check_dir_exists(check_path(path + location))
     for key in img1.keys():
-        im = img1[key] / 5.0
+        im = img1[key] / img1[key].max()
         plt.imsave(str(path + location) + '/' + str(key) + '_G' + '.png', im, cmap=plt.cm.gray)
 
 
         # for patch_size in [10]:
         # for clusters in [100, 200, 500]:
-        #         combine_iters(patch_size, clusters, './')
+        # combine_iters(patch_size, clusters, './')
+
 
 def seg_eval_roc(img, gt):
     """
@@ -262,8 +265,8 @@ def seg_eval_prc(img, gt):
     img = img.ravel()
     gt = gt.ravel() / 255.
     precision, recall, thresholds = precision_recall_curve(gt, img)
-    roc_auc = auc(precision, recall)
-    return precision, recall, thresholds, auc
+    roc_auc = auc(precision, recall, reorder=True)
+    return precision, recall, thresholds, roc_auc
 
 
 def plot_roc(fpr, tpr, roc_auc, lkey="Ours"):
@@ -278,7 +281,7 @@ def plot_roc(fpr, tpr, roc_auc, lkey="Ours"):
 
     """
     # plt.figure()
-    plt.plot(fpr, tpr, label=str(lkey) + '_ROC curve (area = %0.2f)' % roc_auc)
+    plt.plot(fpr, tpr, label=str(lkey) + ' (area = %0.3f)' % roc_auc)
     plt.plot([0, 1], [0, 1], 'k--')
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
@@ -297,23 +300,88 @@ def compute_stat(img, gt1_img, mask=None):
         im_mask = []
 
     for key in img.keys():
-        im_pred.extend((img[key].ravel()).tolist())
+        im_pred.extend((img[key][:, :, 1].ravel()).tolist())
         im_gt.extend((gt1_img[key].ravel()).tolist())
         if mask:
-            im_mask.extend((mask[key].ravel()).tolist())
+            im_mask.extend((mask[key][:,:,0].ravel()).tolist())
 
     im_pred = np.asarray(im_pred)
     im_gt = np.asarray(im_gt)
     im_mask = np.asarray(im_mask)
 
-    nonzero = np.nonzero(im_mask)[0]
+    if mask:
+        nonzero = np.nonzero(im_mask)[0]
 
-    im_pred = im_pred[nonzero]
-    im_gt = im_gt[nonzero]
+        im_pred = im_pred[nonzero]
+        im_gt = im_gt[nonzero]
 
     fpr, tpr, roc_auc = seg_eval_roc(im_pred, im_gt)
     precision, recall, thresholds, roc_auc_prc = seg_eval_prc(im_pred, im_gt)
-
+    # acc = accuracy_score(im_gt,im_pred)
+    # f1 = f1_score(im_gt, im_pred)
     statistics = {'fpr': fpr, 'tpr': tpr, 'roc_auc': roc_auc, 'precision': precision, 'recall': recall,
                   'thresh': thresholds, "auc_prc": roc_auc_prc}
-    return statistics
+    return statistics, [im_pred, im_gt]
+
+### Write code for statistical analysis ###
+stat = defaultdict()
+for it in xrange(5):
+    loc = 'Drive_iter' + str(it) + '_p10clus1000/'
+    img = driveUtils.readimage('./' + loc)
+
+    stat, [imgrav, imggt] = compute_stat(img, gtimages, mask_img)
+
+
+def find_bestworst(img, gt1_img, mask=None):
+    auc_all = defaultdict()
+    for key in img.keys():
+        im_pred = []
+        im_gt = []
+        if mask:
+            im_mask = []
+        im_pred.extend((img[key][:, :, 1].ravel()).tolist())
+        im_gt.extend((gt1_img[key].ravel()).tolist())
+        if mask:
+            im_mask.extend((mask[key].ravel()).tolist())
+
+        im_pred = np.asarray(im_pred)
+        im_gt = np.asarray(im_gt)
+        im_mask = np.asarray(im_mask)
+
+        if mask:
+            nonzero = np.nonzero(im_mask)[0]
+
+            im_pred = im_pred[nonzero]
+            im_gt = im_gt[nonzero]
+
+        fpr, tpr, roc_auc = seg_eval_roc(im_pred, im_gt)
+        precision, recall, thresholds, roc_auc_prc = seg_eval_prc(im_pred, im_gt)
+
+        statistics = {'fpr': fpr, 'tpr': tpr, 'roc_auc': roc_auc, 'precision': precision, 'recall': recall,
+                      'thresh': thresholds, "auc_prc": roc_auc_prc}
+
+        auc_all[key] = statistics
+
+    return auc_all
+
+
+def create_compare(img, gt, thres):
+    img = img > thres
+    gt /= gt.max()
+    comp = np.zeros((img.shape[0], img.shape[1], 3))
+    comp[:, :, 0] = (img != gt)
+    comp[:, :, 1] = gt != (img == gt)
+    comp[:, :, 2] = (img > gt)
+    return comp
+
+import pylab as pl
+
+pl.clf()
+pl.plot(stat['recall'], stat['precision'], label='Precision-Recall curve')
+pl.xlabel('Recall')
+pl.ylabel('Precision')
+pl.ylim([0.0, 1.05])
+pl.xlim([0.0, 1.0])
+pl.title('Precision-Recall DRIVE Set: AUC=%0.2f' % stat['auc_prc'])
+pl.legend(loc="lower left")
+pl.show()
