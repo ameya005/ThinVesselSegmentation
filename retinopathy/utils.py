@@ -300,10 +300,10 @@ def compute_stat(img, gt1_img, mask=None):
         im_mask = []
 
     for key in img.keys():
-        im_pred.extend((img[key][:, :, 1].ravel()).tolist())
+        im_pred.extend((img[key].ravel()).tolist())
         im_gt.extend((gt1_img[key].ravel()).tolist())
         if mask:
-            im_mask.extend((mask[key][:,:,0].ravel()).tolist())
+            im_mask.extend((mask[key].ravel()).tolist())
 
     im_pred = np.asarray(im_pred)
     im_gt = np.asarray(im_gt)
@@ -374,6 +374,7 @@ def create_compare(img, gt, thres):
     comp[:, :, 2] = (img > gt)
     return comp
 
+
 import pylab as pl
 
 pl.clf()
@@ -385,3 +386,31 @@ pl.xlim([0.0, 1.0])
 pl.title('Precision-Recall DRIVE Set: AUC=%0.2f' % stat['auc_prc'])
 pl.legend(loc="lower left")
 pl.show()
+
+
+def plot_prc(statmodel, lkey="Ours"):
+    """
+    Plot function for ROC curve.
+    See : seg_eval_roc() for calculating the given values
+
+    Inputs:
+    -------
+    FPR,TPR,ROC_AUC
+    lkey:	Plot legend value
+
+    """
+    preci = statmodel['precision']
+    reca = statmodel['recall']
+    roc_auc = statmodel['auc_prc']
+    #
+    # plt.figure()
+    plt.plot(reca, preci, label=str(lkey) + '(area = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [1, 0], 'k--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title('Precision Recall Curve')
+    plt.legend(loc="lower left")
+    plt.grid()
+    plt.show()
